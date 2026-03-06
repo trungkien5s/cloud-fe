@@ -1,0 +1,75 @@
+<div class="popup-backdrop" (click)="closeModal()"></div>
+<div class="popup" role="dialog" aria-modal="true">
+    <div class="popup__header"
+        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding: 20px;">
+        <h2 class="popup__title" style="margin: 0; font-size: 20px; color: #003159;">Thông tin tài khoản</h2>
+        <button class="popup__close" aria-label="Đóng" (click)="closeModal()"
+            style="background: none; border: none; cursor: pointer;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path d="M18 6L6 18M6 6l12 12" stroke="#003159" stroke-width="2" stroke-linecap="round" />
+            </svg>
+        </button>
+    </div>
+
+    <div class="popup__body" style="padding: 0 20px 20px;">
+        <div *ngIf="isLoading" style="text-align: center; padding: 20px;">
+            Đang tải thông tin...
+        </div>
+
+        <div class="popup__error" *ngIf="errorMessage" style="color: red; margin-bottom: 16px; text-align: center;">
+            {{ errorMessage }}
+        </div>
+
+        <div *ngIf="!isLoading && userInfo" style="display: flex; flex-direction: column; gap: 16px;">
+            <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 8px;">
+                <img src="https://i.pravatar.cc/150?u=admin_user" alt="Avatar"
+                    style="width: 64px; height: 64px; border-radius: 50%; object-fit: cover;" />
+                <div>
+                    <h3 style="margin: 0; font-size: 18px; color: #003159;">{{ userInfo.fullname || userInfo.username }}
+                    </h3>
+                    <p style="margin: 4px 0 0 0; font-size: 14px; color: #555;">@{{ userInfo.username }}</p>
+                </div>
+            </div>
+
+            <div style="background-color: #F8F9FA; padding: 16px; border-radius: 8px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <span style="color: #666; font-size: 14px;">Email:</span>
+                    <span style="color: #333; font-weight: 500; font-size: 14px;">{{ userInfo.email || 'N/A' }}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <span style="color: #666; font-size: 14px;">SĐT:</span>
+                    <span style="color: #333; font-weight: 500; font-size: 14px;">{{ userInfo.phone || 'N/A' }}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                    <span style="color: #666; font-size: 14px;">Tỉnh / TP:</span>
+                    <span style="color: #333; font-weight: 500; font-size: 14px;">{{ userInfo.province || 'N/A'
+                        }}</span>
+                </div>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <div
+                    style="display: flex; justify-content: space-between; align-items: center; padding: 12px; border: 1px solid #EAEAEA; border-radius: 8px;">
+                    <span style="font-size: 14px; color: #333;">Xác thực email (2FA)</span>
+                    <span style="font-size: 14px; font-weight: bold;"
+                        [style.color]="userInfo.verifyByEmail ? '#28A745' : '#DC3545'">{{
+                        userInfo.verifyByEmail ? 'Đã bật' : 'Đã tắt' }}</span>
+                </div>
+                <div
+                    style="display: flex; justify-content: space-between; align-items: center; padding: 12px; border: 1px solid #EAEAEA; border-radius: 8px;">
+                    <span style="font-size: 14px; color: #333;">Xác thực SMS (2FA)</span>
+                    <span style="font-size: 14px; font-weight: bold;"
+                        [style.color]="userInfo.verifyBySMS ? '#28A745' : '#DC3545'">{{
+                        userInfo.verifyBySMS ? 'Đã bật' : 'Đã tắt' }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="popup__footer" style="padding: 0 20px 24px; display: flex; justify-content: flex-end;">
+        <button (click)="logout()"
+            style="background: transparent; border: 1px solid #DC3545; color: #DC3545; padding: 10px 24px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 600; width: 100%;">
+            Đăng xuất
+        </button>
+    </div>
+</div>

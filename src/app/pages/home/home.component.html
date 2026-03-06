@@ -1,0 +1,418 @@
+<!-- CloudDC Home Page — matches Figma node 31:105752 -->
+<div class="home-page" (click)="onPageClick($event)">
+
+
+    <!-- ══════════════════════════════════════════
+       HERO — banner carousel
+  ══════════════════════════════════════════ -->
+    <section class="hero">
+        <!-- Dimmed side frames -->
+        <div class="hero__side hero__side--left">
+            <img [src]="assets.heroFrameLeft" alt="" class="hero__side-img" />
+        </div>
+
+        <!-- Main featured banner -->
+        <div class="hero__main">
+            <img [src]="assets.heroBanner" alt="MobiFone CloudDC" class="hero__main-img" />
+
+            <!-- Overlaid headline + CTA -->
+            <div class="hero__overlay">
+                <img [src]="assets.heroHeadline" alt="CloudDC headline" class="hero__headline" />
+                <button class="hero__btn">
+                    Tìm hiểu thêm
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                        <path d="M7 17L17 7M17 7H7M17 7v10" stroke="white" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Dots -->
+            <div class="hero__dots">
+                <span class="hero__dot hero__dot--on"></span>
+                <span class="hero__dot"></span>
+                <span class="hero__dot"></span>
+                <span class="hero__dot"></span>
+                <span class="hero__dot"></span>
+            </div>
+        </div>
+
+        <div class="hero__side hero__side--right">
+            <img [src]="assets.heroFrameRight" alt="" class="hero__side-img" />
+        </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════
+       USP BAR
+  ══════════════════════════════════════════ -->
+    <section class="usp">
+        <div class="usp__inner">
+            @for (item of uspItems; track item.title; let i = $index) {
+            <div class="usp__card" [class.usp__card--hi]="i === 0">
+                <img [src]="item.img" [alt]="item.title" class="usp__icon" />
+                <div class="usp__body">
+                    <p class="usp__title">{{ item.title }}</p>
+                    <p class="usp__desc">{{ item.desc }}</p>
+                    @if (item.link) {
+                    <a class="usp__link" href="#">
+                        {{ item.link }}
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                            <path d="M9 18l6-6-6-6" stroke="#006EF5" stroke-width="2" stroke-linecap="round" />
+                        </svg>
+                    </a>
+                    }
+                </div>
+            </div>
+            }
+        </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════
+       WHY CLOUDDC (video + accordion)
+  ══════════════════════════════════════════ -->
+    <section class="why">
+        <div class="why__inner">
+            <!-- Left col: video thumbnail + text -->
+            <div class="why__left">
+                <div class="why__video">
+                    <img [src]="assets.whyVideo" alt="Why ClouDC" class="why__video-img" />
+                    <div class="why__play-wrap">
+                        <div class="play-btn">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+                                <path d="M8 5v14l11-7L8 5z" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                <div class="why__text">
+                    <h2 class="sec-title">Tại sao nên chọn ClouDC?</h2>
+                    <p class="sec-desc">
+                        MobiFone ClouDC là nền tảng điện toán đám mây toàn diện, bảo mật và linh hoạt,
+                        được tin dùng bởi hàng nghìn doanh nghiệp từ startup, SME đến các tập đoàn lớn và cơ
+                        quan nhà nước.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Right col: accordion -->
+            <div class="why__acc">
+                @for (faq of faqItems; track faq.question; let i = $index) {
+                <div class="acc__item">
+                    <button class="acc__btn" (click)="toggleFaq(i)">
+                        <span class="acc__q">{{ faq.question }}</span>
+                        <span class="acc__icon">
+                            @if (activeFaq() === i) {
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path d="M5 12h14" stroke="#003159" stroke-width="2" stroke-linecap="round" />
+                            </svg>
+                            } @else {
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path d="M12 5v14M5 12h14" stroke="#003159" stroke-width="2" stroke-linecap="round" />
+                            </svg>
+                            }
+                        </span>
+                    </button>
+                    @if (activeFaq() === i && faq.answer) {
+                    <div class="acc__ans">{{ faq.answer }}</div>
+                    }
+                    <div class="acc__div"></div>
+                </div>
+                }
+            </div>
+        </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════
+       SERVICES (Dịch vụ CloudDC)
+  ══════════════════════════════════════════ -->
+    <section class="svc" id="services">
+        <div class="svc__inner">
+            <!-- Title row -->
+            <div class="svc__title-row">
+                <h2 class="sec-title sec-title--blue">Gói dịch vụ của CloudDC</h2>
+                <button class="btn-outline">
+                    Tất cả
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                        <path d="M3 6h18M7 12h10M10 18h4" stroke="#004EAE" stroke-width="2" stroke-linecap="round" />
+                    </svg>
+                </button>
+                <div class="search-bar">
+                    <input class="search-bar__input" type="text" placeholder="Tìm theo tên dịch vụ hoặc lĩnh vực" />
+                    <button class="search-bar__btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                            <circle cx="11" cy="11" r="8" stroke="#004EAE" stroke-width="2" />
+                            <path d="m21 21-4.35-4.35" stroke="#004EAE" stroke-width="2" stroke-linecap="round" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tab pills -->
+            <div class="tab-pills">
+                @for (tab of serviceTabs; track tab.id) {
+                <button class="tab-pill" [class.tab-pill--on]="activeTab() === tab.id" (click)="setTab(tab.id)">{{
+                    tab.label }}</button>
+                }
+            </div>
+
+            <!-- Service cards -->
+            <div class="svc__cards">
+                @for (card of serviceCards; track card.title) {
+                <div class="svc-card">
+                    <div class="svc-card__banner">
+                        <img [src]="card.img" [alt]="card.title" class="svc-card__banner-img" />
+                    </div>
+                    <div class="svc-card__body">
+                        <p class="svc-card__title">{{ card.title }}</p>
+                        <a class="svc-card__link" href="#">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
+                                    fill="#006EF5" />
+                            </svg>
+                            {{ card.link }}
+                        </a>
+                    </div>
+                </div>
+                }
+            </div>
+        </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════
+       SOLUTIONS CAROUSEL
+  ══════════════════════════════════════════ -->
+    <section class="sol" id="solutions">
+        <div class="sol__inner">
+            <h2 class="sec-title sec-title--blue">Giải pháp của MobiFone ClouDC</h2>
+            <div class="sol__grid">
+
+                <!-- Arrow left -->
+                <button class="sol__arrow sol__arrow--left" aria-label="Trước">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                        <path d="M15 18l-6-6 6-6" stroke="#003159" stroke-width="2" stroke-linecap="round" />
+                    </svg>
+                </button>
+
+                @for (s of solutions; track s.title) {
+                <div class="sol__card">
+                    <img [src]="s.img" [alt]="s.title" class="sol__card-img" />
+                    <div class="sol__card-overlay">
+                        <h3 class="sol__card-title">{{ s.title }}</h3>
+                    </div>
+                </div>
+                }
+
+                <!-- Arrow right -->
+                <button class="sol__arrow sol__arrow--right" aria-label="Tiếp">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                        <path d="M9 18l6-6-6-6" stroke="#003159" stroke-width="2" stroke-linecap="round" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════
+       BRAND (ClouDC logo + video + certs)
+  ══════════════════════════════════════════ -->
+    <section class="brand">
+        <div class="brand__inner">
+            <div class="brand__head">
+                <img [src]="assets.logoClouDC" alt="ClouDC" class="brand__logo" />
+                <div class="brand__hdiv"></div>
+                <h2 class="brand__tagline">Bứt phá hiệu suất, bảo mật tối đa</h2>
+            </div>
+
+            <div class="brand__video">
+                <img [src]="assets.brandVideo" alt="ClouDC video" class="brand__video-img" />
+                <div class="play-btn play-btn--center">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="white">
+                        <path d="M8 5v14l11-7L8 5z" />
+                    </svg>
+                </div>
+            </div>
+
+            <div class="brand__certs">
+                @for (url of certLogos; track url) {
+                <img [src]="url" alt="Chứng chỉ" class="brand__cert-img" />
+                }
+            </div>
+        </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════
+       NEWS
+  ══════════════════════════════════════════ -->
+    <section class="news" id="news">
+        <div class="news__inner">
+            <h2 class="sec-title sec-title--blue">Tin tức</h2>
+
+            <div class="tab-pills">
+                @for (tab of newsTabs; track tab.id) {
+                <button class="tab-pill" [class.tab-pill--on]="activeNewsTab() === tab.id"
+                    (click)="setNewsTab(tab.id)">{{ tab.label }}</button>
+                }
+            </div>
+
+            <div class="news__grid">
+                <!-- Featured -->
+                <div class="news-card news-card--feat">
+                    <img [src]="newsArticles[0].img" [alt]="newsArticles[0].title" class="news-card__img" />
+                    <div class="news-card__grad">
+                        <h3 class="news-card__title news-card__title--lg">{{ newsArticles[0].title }}</h3>
+                    </div>
+                </div>
+
+                <!-- Side list -->
+                <div class="news__side">
+                    @for (a of newsArticles.slice(1); track a.title) {
+                    <div class="news-card news-card--sm">
+                        <img [src]="a.img" [alt]="a.title" class="news-card__img" />
+                        <div class="news-card__grad news-card__grad--sm">
+                            <p class="news-card__title">{{ a.title }}</p>
+                        </div>
+                    </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════
+       PARTNERS & CLIENTS
+  ══════════════════════════════════════════ -->
+    <section class="partners">
+        <div class="partners__inner">
+            <div class="partners__headings">
+                <h2 class="sec-title sec-title--blue">Đối tác</h2>
+                <h2 class="sec-title sec-title--blue">Khách hàng</h2>
+            </div>
+            <div class="partners__grid">
+                @for (p of partners; track $index) {
+                <div class="partners__logo-box">
+                    <img [src]="p.img" alt="Logo đối tác" class="partners__logo-img" />
+                </div>
+                }
+            </div>
+        </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════
+       CONSULTATION POPUP MODAL
+       Figma: node 31:105094 (overlay) + 31:105095 (popup)
+  ══════════════════════════════════════════ -->
+    @if (showConsultPopup()) {
+    <!-- Dark overlay — node 31:105094 -->
+    <div class="popup-backdrop" (click)="closeConsultPopup()"></div>
+
+    <!-- Popup panel — node 31:105095 -->
+    <div class="popup" role="dialog" aria-modal="true" aria-labelledby="popup-title">
+
+        <!-- ═══ FORM STATE ═══ -->
+        @if (!consultSubmitted()) {
+        <!-- Header: banner image + overlay title + close -->
+        <div class="popup__header">
+            <div class="popup__banner">
+                <img [src]="assets.popupBanner" alt="" class="popup__banner-img" />
+                <div class="popup__banner-overlay"></div>
+                <div class="popup__banner-dots">
+                    <span class="popup__dot popup__dot--on"></span>
+                    <span class="popup__dot"></span>
+                    <span class="popup__dot"></span>
+                    <span class="popup__dot"></span>
+                    <span class="popup__dot"></span>
+                </div>
+            </div>
+            <div class="popup__title-bar">
+                <h2 class="popup__title" id="popup-title">Yêu cầu tư vấn</h2>
+                <button class="popup__close" aria-label="Đóng" (click)="closeConsultPopup()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                        <path d="M18 6L6 18M6 6l12 12" stroke="#003159" stroke-width="2" stroke-linecap="round" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Form body -->
+        <div class="popup__body">
+            <div class="popup__form">
+                <div class="popup__field">
+                    <input class="popup__input" type="text" placeholder="Họ &amp; tên" [(ngModel)]="consultForm.name" />
+                </div>
+                <div class="popup__field">
+                    <input class="popup__input" type="tel" placeholder="Số điện thoại"
+                        [(ngModel)]="consultForm.phone" />
+                </div>
+                <div class="popup__field">
+                    <input class="popup__input" type="text" placeholder="Công ty" [(ngModel)]="consultForm.company" />
+                </div>
+                <div class="popup__field">
+                    <textarea class="popup__textarea" placeholder="Ghi chú" rows="4"
+                        [(ngModel)]="consultForm.note"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer: submit button -->
+        <div class="popup__footer">
+            <button class="popup__submit" (click)="submitConsultForm()">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" stroke="#dc3545"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                Gửi yêu cầu
+            </button>
+        </div>
+        }
+
+        <!-- ═══ SUCCESS STATE ═══ -->
+        @if (consultSubmitted()) {
+        <div class="success__wrapper">
+            <!-- Close button top-right -->
+            <div class="success__close-bar">
+                <button class="popup__close" aria-label="Đóng" (click)="closeConsultPopup()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                        <path d="M18 6L6 18M6 6l12 12" stroke="#003159" stroke-width="2" stroke-linecap="round" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Body: illustration + text -->
+            <div class="success__body">
+                <!-- Paper plane illustration (Figma: 280x280 "send" component) -->
+                <div class="success__illustration">
+                    <div class="success__send">
+                        <img [src]="assets.successVector" alt="" class="success__layer success__layer--vector" />
+                        <img [src]="assets.successGroup" alt="" class="success__layer success__layer--group" />
+                        <img [src]="assets.successGroup1" alt="" class="success__layer success__layer--group1" />
+                    </div>
+                </div>
+
+                <!-- Success text -->
+                <div class="success__content">
+                    <h2 class="success__title">Gửi yêu cầu thành công</h2>
+                    <div class="success__desc">
+                        <p>Nhân viên tư vấn sẽ liên hệ với bạn trong vòng 10-15 phút.</p>
+                        <p>Vui lòng chờ trong giây lát.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer: buttons -->
+            <div class="success__actions">
+                <div class="success__btn-group">
+                    <button class="success__btn success__btn--outline" (click)="closeConsultPopup()">
+                        Về trang chủ
+                    </button>
+                    <button class="success__btn success__btn--primary" (click)="closeConsultPopup()">
+                        Đã hiểu
+                    </button>
+                </div>
+            </div>
+        </div>
+        }
+
+    </div>
+    }
+
+</div>

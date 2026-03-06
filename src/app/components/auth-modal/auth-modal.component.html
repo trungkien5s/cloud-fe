@@ -1,0 +1,197 @@
+<div class="popup-backdrop" (click)="closeModal()"></div>
+<div class="popup" role="dialog" aria-modal="true">
+    <div class="popup__header">
+        <div class="popup__title-bar auth-title-bar">
+            <h2 class="popup__title">{{ getTitle() }}</h2>
+            <button class="popup__close" aria-label="Đóng" (click)="closeModal()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <path d="M18 6L6 18M6 6l12 12" stroke="#003159" stroke-width="2" stroke-linecap="round" />
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <div class="popup__body">
+        <div class="popup__error" *ngIf="errorMessage">
+            {{ errorMessage }}
+        </div>
+
+        <div class="popup__form" [ngSwitch]="mode">
+
+            <!-- ======================= -->
+            <!-- LOGIN MODE              -->
+            <!-- ======================= -->
+            <ng-container *ngSwitchCase="'LOGIN'">
+                <div class="popup__field">
+                    <input class="popup__input" type="text" placeholder="Tên đăng nhập / Email"
+                        [(ngModel)]="loginForm.username" />
+                </div>
+                <div class="popup__field">
+                    <input class="popup__input" type="password" placeholder="Mật khẩu"
+                        [(ngModel)]="loginForm.password" />
+                </div>
+
+                                
+
+                <div class="auth-options">
+                    <a href="javascript:void(0)" class="auth-link" (click)="setMode('FORGOT_PASSWORD')">Quên mật
+                        khẩu?</a>
+                </div>
+
+                <div class="auth-toggle">
+                    <span>Chưa có tài khoản? <a href="javascript:void(0)" (click)="setMode('REGISTER')">Đăng ký
+                            ngay</a></span>
+                </div>
+            </ng-container>
+
+            <!-- ======================= -->
+            <!-- REGISTER MODE           -->
+            <!-- ======================= -->
+            <ng-container *ngSwitchCase="'REGISTER'">
+                <div class="popup__grid">
+                    <div class="popup__field">
+                        <input class="popup__input" type="text" placeholder="Tên đăng nhập (*)"
+                            [(ngModel)]="registerForm.username" />
+                    </div>
+                    <div class="popup__field">
+                        <input class="popup__input" type="text" placeholder="Họ và tên (*)"
+                            [(ngModel)]="registerForm.fullname" />
+                    </div>
+                    <div class="popup__field">
+                        <input class="popup__input" type="email" placeholder="Email (*)"
+                            [(ngModel)]="registerForm.email" />
+                    </div>
+                    <div class="popup__field">
+                        <input class="popup__input" type="text" placeholder="Số điện thoại (*)"
+                            [(ngModel)]="registerForm.phone" />
+                    </div>
+                    <div class="popup__field">
+                        <input class="popup__input" type="password" placeholder="Mật khẩu (*)"
+                            [(ngModel)]="registerForm.password" />
+                    </div>
+                    <div class="popup__field">
+                        <input class="popup__input" type="password" placeholder="Xác nhận mật khẩu (*)"
+                            [(ngModel)]="registerForm.confirmPassword" />
+                    </div>
+                </div>
+
+                <div class="popup__field">
+                    <input class="popup__input" type="text" placeholder="Tỉnh / Thành phố (*)"
+                        [(ngModel)]="registerForm.province" />
+                </div>
+                <div class="popup__field">
+                    <input class="popup__input" type="text" placeholder="Địa chỉ chi tiết"
+                        [(ngModel)]="registerForm.address" />
+                </div>
+
+                <div class="popup__field popup__captcha-field">
+                    <input class="popup__input" type="text" placeholder="Mã captcha (*)"
+                        [(ngModel)]="registerForm.captchaInput" />
+                    <div class="captcha-img-box" (click)="loadCaptcha()" style="cursor: pointer;"
+                        title="Nhấn để đổi mã mới">
+                        <img *ngIf="captchaData.captchaImageBase64" [src]="captchaData.captchaImageBase64" alt="Captcha"
+                            class="captcha-img" />
+                    </div>
+                </div>
+
+                <div class="popup__checkbox-field">
+                    <label class="checkbox-label">
+                        <input type="checkbox" [(ngModel)]="registerForm.verifyByEmail" />
+                        <span>Bật xác thực 2 lớp bằng Email</span>
+                    </label>
+                </div>
+
+                <div class="popup__checkbox-field">
+                    <label class="checkbox-label">
+                        <input type="checkbox" [(ngModel)]="registerForm.verifyBySMS" />
+                        <span>Bật xác thực 2 lớp bằng SMS</span>
+                    </label>
+                </div>
+
+                <div class="popup__checkbox-field">
+                    <label class="checkbox-label">
+                        <input type="checkbox" [(ngModel)]="registerForm.agreeTerms" />
+                        <span>Tôi đã đọc và đồng ý với <a href="javascript:void(0)">Điều khoản sử dụng dịch
+                                vụ</a></span>
+                    </label>
+                </div>
+
+                <div class="auth-toggle">
+                    <span>Đã có tài khoản? <a href="javascript:void(0)" (click)="setMode('LOGIN')">Đăng nhập</a></span>
+                </div>
+            </ng-container>
+
+            <!-- ======================= -->
+            <!-- FORGOT PASSWORD MODE    -->
+            <!-- ======================= -->
+            <ng-container *ngSwitchCase="'FORGOT_PASSWORD'">
+                <p class="auth-hint">Vui lòng nhập địa chỉ email đã đăng ký. Chúng tôi sẽ gửi mã OTP để đặt lại mật khẩu
+                    của bạn.</p>
+                <div class="popup__field">
+                    <input class="popup__input" type="email" placeholder="Nhập Email (*)"
+                        [(ngModel)]="forgotPasswordForm.email" />
+                </div>
+
+                <div class="auth-toggle">
+                    <a href="javascript:void(0)" (click)="setMode('LOGIN')">Quay lại Đăng nhập</a>
+                </div>
+            </ng-container>
+
+            <!-- ======================= -->
+            <!-- RESET PASSWORD MODE     -->
+            <!-- ======================= -->
+            <ng-container *ngSwitchCase="'RESET_PASSWORD'">
+                <p class="auth-hint">Nhập mã OTP vừa được gửi đến email và thiết lập mật khẩu mới.</p>
+                <div class="popup__field">
+                    <input class="popup__input" type="text" placeholder="Mã OTP 6 số (*)"
+                        [(ngModel)]="resetPasswordForm.otpCode" maxlength="6" />
+                </div>
+                <div class="popup__field">
+                    <input class="popup__input" type="password" placeholder="Mật khẩu mới (*)"
+                        [(ngModel)]="resetPasswordForm.newPassword" />
+                </div>
+                <div class="popup__field">
+                    <input class="popup__input" type="password" placeholder="Xác nhận mật khẩu (*)"
+                        [(ngModel)]="resetPasswordForm.confirmPassword" />
+                </div>
+            </ng-container>
+
+            <!-- ======================= -->
+            <!-- TWO FACTOR MODE         -->
+            <!-- ======================= -->
+            <ng-container *ngSwitchCase="'TWO_FACTOR'">
+                <ng-container *ngIf="step2Fa === 'CHOOSE_METHOD'">
+                    <p class="auth-hint">Vui lòng chọn phương thức gửi mã OTP:</p>
+                    <div class="popup__field" *ngFor="let method of available2FaMethods">
+                        <label class="radio-label">
+                            <input type="radio" name="2faMethod" [value]="method" [(ngModel)]="selected2FaMethod">
+                            <span>Gửi mã qua {{ method }}</span>
+                        </label>
+                    </div>
+                </ng-container>
+
+                <ng-container *ngIf="step2Fa === 'ENTER_OTP'">
+                    <p class="auth-hint">Vui lòng nhập mã OTP được gửi tới email/SĐT của bạn để hoàn tất đăng nhập.</p>
+                    <div class="popup__field">
+                        <input class="popup__input" type="text" placeholder="Mã OTP 6 số (*)"
+                            [(ngModel)]="twoFactorForm.otpCode" maxlength="6" />
+                    </div>
+                    <div class="popup__checkbox-field">
+                        <label class="checkbox-label">
+                            <input type="checkbox" [(ngModel)]="twoFactorForm.rememberDevice" />
+                            <span>Ghi nhớ thiết bị này trong 30 ngày</span>
+                        </label>
+                    </div>
+                </ng-container>
+            </ng-container>
+
+        </div>
+    </div>
+
+    <div class="popup__footer">
+        <button class="popup__submit" (click)="submitForm()"
+            [disabled]="isLoading || (mode === 'REGISTER' && !registerForm.agreeTerms)">
+            {{ getSubmitText() }}
+        </button>
+    </div>
+</div>

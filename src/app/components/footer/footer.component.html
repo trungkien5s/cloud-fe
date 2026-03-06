@@ -1,0 +1,58 @@
+<footer class="ftr" id="contact">
+    <div class="ftr__grid">
+        <div class="ftr__col">
+            <p class="ftr__col-hdg">Về chúng tôi</p>
+            <ul class="ftr__links">
+                @for (link of footerAbout; track link) {
+                <li><a class="ftr__link" href="#">{{ link }}</a></li>
+                }
+            </ul>
+        </div>
+
+        <div class="ftr__col">
+            <p class="ftr__col-hdg">Mục nổi bật</p>
+            <ul class="ftr__links">
+                @for (link of footerHighlights; track link) {
+                <li><a class="ftr__link" href="#">{{ link }}</a></li>
+                }
+            </ul>
+        </div>
+
+        <div class="ftr__col">
+            <p class="ftr__col-hdg">Tìm hiểu thêm</p>
+            <ul class="ftr__links">
+                @for (link of footerLearnMore; track link) {
+                <li><a class="ftr__link" href="#">{{ link }}</a></li>
+                }
+            </ul>
+        </div>
+
+        <div class="ftr__col ftr__col--certs">
+            <p class="ftr__col-hdg">Chứng nhận bởi</p>
+            <div class="ftr__cert-row">
+                <img [src]="assets.footerCertMinistry" alt="Bộ TTTT" class="ftr__cert-img ftr__cert-img--lg" />
+                @for (url of footerCerts; track url) {
+                <img [src]="url" alt="Chứng chỉ" class="ftr__cert-img" />
+                }
+            </div>
+        </div>
+
+        <div class="ftr__col">
+            <p class="ftr__col-hdg">Tổng đài (8:00 – 22:00)</p>
+            <ul class="ftr__links">
+                <li>Tư vấn dịch vụ (Miễn phí)<br /><strong>1800 0000</strong> (nhánh 2)</li>
+                <li>Góp ý, khiếu nại <strong>1800 0000</strong> (nhánh 3)</li>
+            </ul>
+            <div class="ftr__social">
+                @for (url of socialIcons; track url) {
+                <img [src]="url" alt="Mạng xã hội" class="ftr__social-icon" />
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="ftr__bar">
+        <span class="ftr__bar-txt">Dịch vụ của</span>
+        <img [src]="assets.logo" alt="MobiFone" class="ftr__mobifone" />
+    </div>
+</footer>
