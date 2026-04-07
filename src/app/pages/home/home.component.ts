@@ -1,4 +1,4 @@
-import { Component, signal, OnInit } from '@angular/core';
+import { Component, signal, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService, AuthUser } from '../../services/auth.service';
@@ -94,7 +94,7 @@ const A = {
     templateUrl: './home.component.html',
     styleUrl: './home.component.css',
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, OnDestroy {
     currentUser = signal<AuthUser | null>(null);
 
     activeTab = signal<string>('cloud');
@@ -109,6 +109,17 @@ export class HomeComponent implements OnInit {
         company: '',
         note: '',
     };
+
+    // Hero Banner Carousel
+    heroBanners = [
+        { img: A.heroBanner, headline: A.heroHeadline },
+        { img: A.heroBanner, headline: A.heroHeadline },
+        { img: A.heroBanner, headline: A.heroHeadline },
+        { img: A.heroBanner, headline: A.heroHeadline },
+        { img: A.heroBanner, headline: A.heroHeadline },
+    ];
+    activeBannerIndex = signal<number>(0);
+    private bannerInterval: any;
 
     navLinks = [
         { label: 'Dịch vụ', id: 'services' },
@@ -179,6 +190,85 @@ export class HomeComponent implements OnInit {
         { title: 'MobiFone Virtual Private Cloud', link: 'Yêu cầu tư vấn', img: A.serviceCardBg },
     ];
 
+    landingServices = [
+        {
+            title: 'Dịch vụ Co-Location',
+            desc: 'Dịch vụ cho thuê chỗ đặt thiết bị cho các cá nhân, tổ chức, doanh nghiệp tại các Trung tâm dữ liệu (Data Center – DC) của MobiFone...',
+            img: `${BASE}/Co-Location.png`
+        },
+        {
+            title: 'Dịch vụ Cloud Server',
+            desc: 'Cung cấp máy chủ ảo cam kết IOPS duy nhất tại Việt Nam, hệ thống quản lý tự động, mở rộng tài nguyên linh hoạt và tối ưu theo nhu cầu sử dụng...',
+            img: `${BASE}/Cloud_Server.png`
+        },
+        {
+            title: 'Dịch vụ MobiFone Cloud Managed Service',
+            desc: 'Dịch vụ cung cấp công cụ giám sát 24/24 tài nguyên tải CPU, tải RAM, Disk IO, Network của toàn bộ các máy ảo mà khách hàng quản lý thông qua giao diện đồ họa...',
+            img: `${BASE}/Cloud_Managed_Service.png`
+        },
+        {
+            title: 'Dịch vụ MobiFone Kubernetes Engine',
+            desc: 'Cung cấp một nền tảng mạnh mẽ và linh hoạt cho phép người dùng triển khai và quản lý các ứng dụng dưới dạng container trên cơ sở hạ tầng đám mây...',
+            img: `${BASE}/Kubernetes_Engine.png`
+        },
+        {
+            title: 'Dịch vụ MobiFone Block Storage',
+            desc: 'Dịch vụ cung cấp không gian lưu trữ dạng block cung cấp volume cho các máy ảo để sử dụng để lưu trữ dữ liệu...',
+            img: `${BASE}/Block_Storage.png`
+        },
+        {
+            title: 'Dịch vụ MobiFone File Storage',
+            desc: 'Dịch vụ cung cấp giải pháp lưu trữ dữ liệu dạng cấu trúc phân cấp cho khách hàng đáp ứng nhu cầu sử dụng các giao thức phổ biến như CIFS, NFS ...',
+            img: `${BASE}/File_Storage.png`
+        },
+        {
+            title: 'Dịch vụ MobiFone Object Storage',
+            desc: 'Dịch vụ cung cấp giải pháp lưu trữ dạng object trên nền tảng đám mây với không gian lưu trữ lớn, đáp ứng lưu trữ đa dạng kiểu dữ liệu đảm bảo an toàn bảo mật cho khách hàng.',
+            img: `${BASE}/Object_Storage.png`
+        },
+        {
+            title: 'Dịch vụ MobiFone Load Balancer',
+            desc: 'Dịch vụ phân phối lưu lượng truy cập an toàn và nhanh chóng khi có quá nhiều request cùng một lúc.',
+            img: `${BASE}/Load_Balancer.png`
+        },
+        {
+            title: 'Dịch vụ MobiFone Private Cloud',
+            desc: 'Dịch vụ cung cấp một không gian tài nguyên độc lập bao gồm các thành phần: máy ảo, dung lượng lưu trữ, mạng',
+            img: `${BASE}/Private_Cloud.png`
+        },
+        {
+            title: 'Dịch vụ MobiFone Cloud Firewall',
+            desc: 'Dịch vụ cung cấp một công cụ quan trọng để quản lý và kiểm soát lưu lượng mạng đến và đi từ máy ảo trên Public Cloud.',
+            img: `${BASE}/Cloud_Firewall.png`
+        },
+        {
+            title: 'Dịch vụ MobiFone CDN',
+            desc: 'Cung cấp dịch vụ mạng phân phối nội dung (Content Delivery Network) giúp phân phối các tài nguyên như hình ảnh, video và ứng dụng...',
+            img: `${BASE}/CDN.png`
+        },
+        {
+            title: 'Dịch vụ Web Hosting',
+            desc: 'Dịch vụ cung cấp không gian lưu trữ Website trên internet để các Website có thể vận hành.',
+            img: `${BASE}/Web_Hosting.png`
+        },
+        {
+            title: 'Dịch vụ Email Hosting',
+            desc: 'Dịch vụ cung cấp máy chủ được cấu hình sử dụng tên miền doanh nghiệp để thực hiện quá trình gửi và nhận thư điện tử.',
+            img: `${BASE}/Email_Hosting.png`
+        },
+        {
+            title: 'Dịch vụ MobiFone Cloud Martket',
+            desc: 'Cung cấp dịch vụ mạng phân phối nội dung (Content Delivery Network) giúp phân phối các tài nguyên như hình ảnh, video và ứng dụng...',
+            img: `${BASE}/Cloud_Martket.png`
+        }
+    ];
+
+    // Search icon
+    landingSearchIcon = 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2724%27 height=%2724%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27%23666%27 stroke-width=%272.5%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3E%3Ccircle cx=%2711%27 cy=%2711%27 r=%278%27/%3E%3Cline x1=%2721%27 y1=%2721%27 x2=%2716.65%27 y2=%2716.65%27/%3E%3C/svg%3E';
+
+    // Arrow icon
+    landingArrowIcon = 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2724%27 height=%2724%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27%23666%27 stroke-width=%272.5%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3E%3Cpath d=%27M9 18l6-6-6-6%27/%3E%3C/svg%3E';
+
     solutions = [
         { title: 'Cloud Server', img: A.solutionCloud },
         { title: 'Database Service', img: A.solutionDatabase },
@@ -226,6 +316,36 @@ export class HomeComponent implements OnInit {
         this.authService.authUser$.subscribe(user => {
             this.currentUser.set(user);
         });
+        
+        // Auto rotate banners
+        this.startBannerAutoRotate();
+    }
+    
+    ngOnDestroy() {
+        if (this.bannerInterval) {
+            clearInterval(this.bannerInterval);
+        }
+    }
+
+    startBannerAutoRotate() {
+        this.bannerInterval = setInterval(() => {
+            this.nextBanner();
+        }, 5000);
+    }
+
+    setBannerIndex(index: number) {
+        this.activeBannerIndex.set(index);
+        // Reset interval when user clicks manually
+        clearInterval(this.bannerInterval);
+        this.startBannerAutoRotate();
+    }
+
+    nextBanner() {
+        this.activeBannerIndex.update(idx => (idx + 1) % this.heroBanners.length);
+    }
+
+    prevBanner() {
+        this.activeBannerIndex.update(idx => (idx - 1 + this.heroBanners.length) % this.heroBanners.length);
     }
 
     openConsultPopup() {

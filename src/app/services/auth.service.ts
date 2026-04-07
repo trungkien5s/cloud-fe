@@ -4,6 +4,7 @@ import { Observable, BehaviorSubject } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { isPlatformBrowser } from '@angular/common';
+import { Router } from '@angular/router';
 
 export interface ApiResponse<T> {
     data: T;
@@ -25,6 +26,7 @@ export interface LoginResponse {
     twoFactorRequired?: boolean;
     sessionToken?: string;
     expiresIn?: number;
+    active?: boolean;
 }
 
 // User context stored after authentication
@@ -45,14 +47,20 @@ export class AuthService {
 
     constructor(
         private http: HttpClient,
+        private router: Router,
         @Inject(PLATFORM_ID) private platformId: Object
     ) {
         // Initialize state from local storage on startup (only in Browser, not SSR)
         if (isPlatformBrowser(this.platformId)) {
             const token = localStorage.getItem('access_token');
             const username = localStorage.getItem('username');
-            if (token) {
+            if (token && !this.isTokenExpired(token)) {
                 this.authUserSubject.next({ token, username: username || undefined });
+            } else if (token) {
+                // Token exists but is expired → clear storage silently on startup
+                localStorage.removeItem('access_token');
+                localStorage.removeItem('refresh_token');
+                localStorage.removeItem('username');
             }
         }
     }
@@ -103,6 +111,38 @@ export class AuthService {
             localStorage.removeItem('username');
         }
         this.authUserSubject.next(null);
+        this.router.navigate(['/']);
+    }
+
+    /**
+     * Called by the HTTP interceptor when refresh token has expired.
+     * Clears session, shows an alert to notify the user, then redirects home.
+     */
+    forceLogout() {
+        if (isPlatformBrowser(this.platformId)) {
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('refresh_token');
+            localStorage.removeItem('username');
+        }
+        this.authUserSubject.next(null);
+        if (isPlatformBrowser(this.platformId)) {
+            alert('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+        }
+        this.router.navigate(['/']);
+    }
+
+    /**
+     * Decode JWT and check if it has expired.
+     * Returns true if expired or malformed.
+     */
+    isTokenExpired(token: string): boolean {
+        try {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            if (!payload.exp) return false; // No expiry claim → treat as valid
+            return Date.now() >= payload.exp * 1000;
+        } catch {
+            return true; // Malformed token → treat as expired
+        }
     }
 
     getCaptcha(): Observable<CaptchaResponse> {
@@ -124,7 +164,13 @@ export class AuthService {
         return this.http.post<any>(`${this.apiUrl}/auth/login`, data)
             .pipe(
                 tap(res => console.log('Raw Login API Response:', res)),
-                map(res => res.data !== undefined ? res.data : res), // Fallback if BE didn't wrap in data
+                map(res => {
+                    const resData = res.data !== undefined ? res.data : res;
+                    if (resData && resData.active === false) {
+                        throw new Error('Tài khoản của bạn đã bị vô hiệu hóa hoặc chưa được kích hoạt!');
+                    }
+                    return resData;
+                }),
                 tap(resData => {
                     // Inject username from request data if not provided by backend
                     if (resData && !resData.username && data.username) {

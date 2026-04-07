@@ -13,27 +13,43 @@
 
         <!-- Main featured banner -->
         <div class="hero__main">
-            <img [src]="assets.heroBanner" alt="MobiFone CloudDC" class="hero__main-img" />
+            <!-- Arrows -->
+            <button class="hero__arrow hero__arrow--left" (click)="prevBanner()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                </svg>
+            </button>
+            <button class="hero__arrow hero__arrow--right" (click)="nextBanner()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                </svg>
+            </button>
 
-            <!-- Overlaid headline + CTA -->
-            <div class="hero__overlay">
-                <img [src]="assets.heroHeadline" alt="CloudDC headline" class="hero__headline" />
-                <button class="hero__btn">
-                    Tìm hiểu thêm
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                        <path d="M7 17L17 7M17 7H7M17 7v10" stroke="white" stroke-width="2" stroke-linecap="round"
-                            stroke-linejoin="round" />
-                    </svg>
-                </button>
+            <!-- Slider container -->
+            <div class="hero__slider" [style.transform]="'translateX(' + (-activeBannerIndex() * 100) + '%)'">
+                @for (banner of heroBanners; track $index) {
+                <div class="hero__slide">
+                    <img [src]="banner.img" alt="MobiFone CloudDC" class="hero__main-img" />
+
+                    <!-- Overlaid headline + CTA -->
+                    <div class="hero__overlay">
+                        <img [src]="banner.headline" alt="CloudDC headline" class="hero__headline" />
+                        <button class="hero__btn">
+                            Tìm hiểu thêm
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                <path d="M7 17L17 7M17 7H7M17 7v10" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                }
             </div>
 
             <!-- Dots -->
             <div class="hero__dots">
-                <span class="hero__dot hero__dot--on"></span>
-                <span class="hero__dot"></span>
-                <span class="hero__dot"></span>
-                <span class="hero__dot"></span>
-                <span class="hero__dot"></span>
+                @for (banner of heroBanners; track $index) {
+                <span class="hero__dot" [class.hero__dot--on]="activeBannerIndex() === $index" (click)="setBannerIndex($index)"></span>
+                }
             </div>
         </div>
 
@@ -125,56 +141,35 @@
     <!-- ══════════════════════════════════════════
        SERVICES (Dịch vụ CloudDC)
   ══════════════════════════════════════════ -->
-    <section class="svc" id="services">
-        <div class="svc__inner">
-            <!-- Title row -->
-            <div class="svc__title-row">
-                <h2 class="sec-title sec-title--blue">Gói dịch vụ của CloudDC</h2>
-                <button class="btn-outline">
-                    Tất cả
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                        <path d="M3 6h18M7 12h10M10 18h4" stroke="#004EAE" stroke-width="2" stroke-linecap="round" />
-                    </svg>
-                </button>
-                <div class="search-bar">
-                    <input class="search-bar__input" type="text" placeholder="Tìm theo tên dịch vụ hoặc lĩnh vực" />
-                    <button class="search-bar__btn">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                            <circle cx="11" cy="11" r="8" stroke="#004EAE" stroke-width="2" />
-                            <path d="m21 21-4.35-4.35" stroke="#004EAE" stroke-width="2" stroke-linecap="round" />
-                        </svg>
-                    </button>
+    <section class="landing-services" id="services">
+        <div class="landing-services__inner">
+            <h2 class="landing-services__title">DỊCH VỤ CỦA CHÚNG TÔI</h2>
+
+            <div class="landing-services__search-container">
+                <div class="landing-services__search-wrapper">
+                    <img [src]="landingSearchIcon" alt="Search" class="landing-services__search-icon" />
+                    <input type="text" class="landing-services__search-input" placeholder="Tìm kiếm dịch vụ" />
                 </div>
             </div>
 
-            <!-- Tab pills -->
-            <div class="tab-pills">
-                @for (tab of serviceTabs; track tab.id) {
-                <button class="tab-pill" [class.tab-pill--on]="activeTab() === tab.id" (click)="setTab(tab.id)">{{
-                    tab.label }}</button>
-                }
-            </div>
-
-            <!-- Service cards -->
-            <div class="svc__cards">
-                @for (card of serviceCards; track card.title) {
-                <div class="svc-card">
-                    <div class="svc-card__banner">
-                        <img [src]="card.img" [alt]="card.title" class="svc-card__banner-img" />
+            <div class="landing-services__grid">
+                @for (service of landingServices; track service.title) {
+                <div class="landing-service-card">
+                    <div class="landing-service-card__image-container">
+                        <img [src]="service.img" [alt]="service.title" class="landing-service-card__image" />
                     </div>
-                    <div class="svc-card__body">
-                        <p class="svc-card__title">{{ card.title }}</p>
-                        <a class="svc-card__link" href="#">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
-                                    fill="#006EF5" />
-                            </svg>
-                            {{ card.link }}
-                        </a>
+                    <div class="landing-service-card__content">
+                        <h3 class="landing-service-card__title">{{ service.title }}</h3>
+                        <p class="landing-service-card__desc">{{ service.desc }}</p>
+                    </div>
+                    <div class="landing-service-card__action">
+                        <button class="landing-service-card__btn">Chi tiết</button>
                     </div>
                 </div>
                 }
             </div>
+
+
         </div>
     </section>
 

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
@@ -24,7 +24,10 @@ export class ChangePasswordComponent implements OnInit {
     passwordMessage = '';
     passwordError = '';
 
-    constructor(private authService: AuthService) { }
+    constructor(
+        private authService: AuthService,
+        private cdr: ChangeDetectorRef
+    ) { }
 
     ngOnInit() {
         const currentUser = this.authService.currentUser;
@@ -33,15 +36,18 @@ export class ChangePasswordComponent implements OnInit {
                 next: (res) => {
                     this.userInfo = res;
                     this.isLoading = false;
+                    this.cdr.detectChanges();
                 },
                 error: (err) => {
                     this.errorMessage = 'Không thể tải thông tin người dùng.';
                     this.isLoading = false;
+                    this.cdr.detectChanges();
                 }
             });
         } else {
             this.errorMessage = 'Chưa đăng nhập.';
             this.isLoading = false;
+            this.cdr.detectChanges();
         }
     }
 
@@ -70,10 +76,12 @@ export class ChangePasswordComponent implements OnInit {
                     } else {
                         this.passwordError = res?.message || 'Đổi mật khẩu thất bại.';
                     }
+                    this.cdr.detectChanges();
                 },
                 error: (err) => {
                     this.isChangingPassword = false;
                     this.passwordError = err.error?.message || 'Có lỗi xảy ra, vui lòng thử lại sau.';
+                    this.cdr.detectChanges();
                 }
             });
         } else {

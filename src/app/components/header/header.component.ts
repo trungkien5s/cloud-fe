@@ -1,8 +1,9 @@
 import { Component, EventEmitter, Output, signal, HostListener, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { AuthService, AuthUser } from '../../services/auth.service';
 import { AuthModalComponent } from '../auth-modal/auth-modal.component';
+import { VmService } from '../../services/vm.service';
 
 const BASE = '/assets/figma';
 
@@ -21,6 +22,10 @@ export class HeaderComponent implements OnInit {
     showServiceMenu = signal<boolean>(false);
     showAuthModal = signal<boolean>(false);
     showUserDropdown = signal<boolean>(false);
+    showVmDropdown = signal<boolean>(false);
+
+    myVMs = signal<any[]>([]);
+    isLoadingVMs = signal<boolean>(false);
 
     menuCategory = signal<string>('featured');
     activeNav = signal<string>('');
@@ -54,12 +59,53 @@ export class HeaderComponent implements OnInit {
         menuBanner: `${BASE}/usp_tech.png`
     };
 
-    constructor(private authService: AuthService) { }
+    constructor(
+        private authService: AuthService,
+        private vmService: VmService,
+        private router: Router
+    ) { }
 
     ngOnInit() {
         this.authService.authUser$.subscribe(user => {
             this.currentUser.set(user);
+            if (user) {
+                this.loadMyVMs();
+            } else {
+                this.myVMs.set([]);
+            }
         });
+    }
+
+    loadMyVMs() {
+        this.isLoadingVMs.set(true);
+        this.vmService.getMyVMs().subscribe({
+            next: (data) => {
+                if (data && data.content) {
+                    this.myVMs.set(data.content);
+                } else if (Array.isArray(data)) {
+                    this.myVMs.set(data);
+                }
+                this.isLoadingVMs.set(false);
+            },
+            error: () => {
+                console.error('Không thể tải danh sách VM');
+                this.isLoadingVMs.set(false);
+            }
+        });
+    }
+
+    toggleVmDropdown(event: Event) {
+        event.stopPropagation();
+        this.showVmDropdown.set(!this.showVmDropdown());
+        if (this.showVmDropdown() && this.myVMs().length === 0) {
+            this.loadMyVMs();
+        }
+        this.showUserDropdown.set(false);
+        this.showServiceMenu.set(false);
+    }
+
+    closeVmDropdown() {
+        this.showVmDropdown.set(false);
     }
 
     openAuthModal() {
@@ -75,6 +121,7 @@ export class HeaderComponent implements OnInit {
     toggleUserDropdown(event: Event) {
         event.stopPropagation();
         this.showUserDropdown.set(!this.showUserDropdown());
+        this.showVmDropdown.set(false);
     }
 
     closeUserDropdown() {
@@ -109,6 +156,13 @@ export class HeaderComponent implements OnInit {
             event.preventDefault();
             this.activeNav.set(id);
             this.closeServiceMenu();
+            
+            // Redirect to pricing page
+            if (id === 'pricing') {
+                this.router.navigate(['/pricing']);
+                return;
+            }
+
             const element = document.getElementById(id);
             if (element) {
                 const headerOffset = 80;
@@ -131,6 +185,9 @@ export class HeaderComponent implements OnInit {
         }
         if (!target.closest('.user-dropdown-container')) {
             this.showUserDropdown.set(false);
+        }
+        if (!target.closest('.vm-dropdown-container')) {
+            this.showVmDropdown.set(false);
         }
     }
 }

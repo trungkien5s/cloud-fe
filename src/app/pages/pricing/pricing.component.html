@@ -1,0 +1,80 @@
+<div class="pricing-container">
+    <h1 class="pricing-title">BẢNG GIÁ DỊCH VỤ CLOUD</h1>
+
+    <!-- Tabs -->
+    <div class="pricing-tabs">
+        <button class="pricing-tab" [class.active]="activeTab === 'HDD'" (click)="setTab('HDD')">
+            Ổ cứng HDD
+        </button>
+        <button class="pricing-tab" [class.active]="activeTab === 'SSD'" (click)="setTab('SSD')">
+            Ổ cứng SSD
+        </button>
+    </div>
+
+    <!-- Cards Layout -->
+    @if(loading) {
+        <div style="text-align: center; padding: 40px; color: #666; font-size: 18px;">
+            Đang tải dữ liệu cấu hình...
+        </div>
+    } @else {
+        <div class="pricing-cards">
+            @for(plan of (activeTab === 'HDD' ? hddPlans : ssdPlans); track plan.name) {
+            <div class="pricing-card">
+                <!-- Icon graphic placeholder -->
+                <div class="pricing-card-img">
+                    <img src="/assets/figma/usp_tech.png" alt="Cloud Illustration" style="width: 140px; height: 100px; object-fit: contain;">
+                </div>
+
+                <h2 class="pricing-card-title">{{ plan.name }}</h2>
+
+                <div class="pricing-card-specs">
+                    <div class="spec-item">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                            <circle cx="12" cy="12" r="10" stroke="#006EF5" stroke-width="2"/>
+                            <path d="M8 12l3 3 5-5" stroke="#006EF5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span>CPU : {{ plan.cpu }}</span>
+                    </div>
+                    <div class="spec-item">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                            <circle cx="12" cy="12" r="10" stroke="#006EF5" stroke-width="2"/>
+                            <path d="M8 12l3 3 5-5" stroke="#006EF5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span>CORE : {{ plan.core }} Cores</span>
+                    </div>
+                    <div class="spec-item">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                            <circle cx="12" cy="12" r="10" stroke="#006EF5" stroke-width="2"/>
+                            <path d="M8 12l3 3 5-5" stroke="#006EF5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span>{{ plan.diskType }} : {{ plan.disk }} GB</span>
+                    </div>
+                    <div class="spec-item">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                            <circle cx="12" cy="12" r="10" stroke="#006EF5" stroke-width="2"/>
+                            <path d="M8 12l3 3 5-5" stroke="#006EF5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span>RAM : {{ plan.ram }}GB</span>
+                    </div>
+                    <div class="spec-item">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                            <circle cx="12" cy="12" r="10" stroke="#006EF5" stroke-width="2"/>
+                            <path d="M8 12l3 3 5-5" stroke="#006EF5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span>IP : 0{{ plan.ip }}</span>
+                    </div>
+                </div>
+
+                <div class="pricing-card-footer">
+                    <span class="price-text">{{ plan.price }} đ</span>
+                    <button class="buy-btn" (click)="buyPlan(plan)">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                            <path d="M5 12h14M12 5l7 7-7 7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        }
+        </div>
+    }
+</div>

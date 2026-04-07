@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
 
@@ -14,7 +14,10 @@ export class ProfileComponent implements OnInit {
     isLoading = true;
     errorMessage = '';
 
-    constructor(private authService: AuthService) { }
+    constructor(
+        private authService: AuthService,
+        private cdr: ChangeDetectorRef
+    ) { }
 
     ngOnInit() {
         const currentUser = this.authService.currentUser;
@@ -23,15 +26,18 @@ export class ProfileComponent implements OnInit {
                 next: (res) => {
                     this.userInfo = res;
                     this.isLoading = false;
+                    this.cdr.detectChanges(); // Bắt buộc Angular cập nhật giao diện
                 },
                 error: (err) => {
                     this.errorMessage = 'Không thể tải thông tin người dùng.';
                     this.isLoading = false;
+                    this.cdr.detectChanges();
                 }
             });
         } else {
             this.errorMessage = 'Chưa đăng nhập.';
             this.isLoading = false;
+            this.cdr.detectChanges();
         }
     }
 }

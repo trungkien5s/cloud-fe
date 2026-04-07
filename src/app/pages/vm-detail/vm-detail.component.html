@@ -1,0 +1,132 @@
+<div class="vm-detail-page">
+  <div class="vm-detail-container">
+    <div class="header-section">
+      <h2>Chi tiết cấu hình</h2>
+      <button class="btn btn-outline" (click)="goToList()">← Quay lại danh sách</button>
+    </div>
+
+    <!-- Trạng thái Loading ban đầu -->
+    <div *ngIf="loading && !vmInfo" class="loading-state">
+      <div class="spinner"></div>
+      <p>Đang tải dữ liệu máy ảo...</p>
+    </div>
+
+    <div *ngIf="error" class="alert alert-error">{{ error }}</div>
+
+    <div *ngIf="vmInfo" class="content-wrapper">
+      
+      <!-- Real-time Status Bar -->
+      <div class="status-banner" [ngClass]="{'status-active': isActive, 'status-build': isProvisioning, 'status-error': vmInfo.trangThai === 'ERROR'}">
+        <div class="status-icon">
+           <div *ngIf="isProvisioning" class="spinner-small"></div>
+           <svg *ngIf="isActive" width="24" height="24" viewBox="0 0 24 24" fill="none">
+             <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+           </svg>
+        </div>
+        <div class="status-info">
+          <h3>Trạng thái: {{ vmInfo.trangThai || 'Đang xử lý' }}</h3>
+          <p *ngIf="isProvisioning">Máy ảo đang được cấp phát ({{ vmInfo.stateWaiting || 'Vui lòng chờ' }}). Hệ thống sẽ tự động cập nhật.</p>
+          <p *ngIf="isActive">Máy ảo đã được khởi tạo thành công và sẵn sàng sử dụng.</p>
+        </div>
+      </div>
+
+      <!-- Credential/First Time Info -->
+      <div *ngIf="isActive" class="alert alert-info credentials-alert">
+        <strong>Quan trọng:</strong> Hệ thống đã tự động tạo máy ảo. 
+        <br>Để SSH (Linux) hoặc RDP (Windows), hãy sử dụng IP: <strong>{{ vmInfo.ipPublic || vmInfo.ipPrivate || 'Đang chờ IP' }}</strong>. 
+        <br><em>Nếu bạn có đăng ký khởi tạo Password/Keypair, vui lòng kiểm tra email hoặc đăng nhập với Key mặc định của bạn.</em>
+      </div>
+
+      <div class="info-grid">
+        <!-- Thông tin chung -->
+        <div class="info-card">
+          <h4>Thông tin chung</h4>
+          <div class="info-row">
+            <span class="label">Tên máy ảo:</span>
+            <span class="value">{{ vmInfo.ten }}</span>
+          </div>
+          <div class="info-row">
+            <span class="label">Cloud ID:</span>
+            <span class="value code-font">{{ vmInfo.cloudId || 'Đang cấp phát...' }}</span>
+          </div>
+          <div class="info-row">
+            <span class="label">Khách hàng:</span>
+            <span class="value">{{ vmInfo.tenKhachHang }}</span>
+          </div>
+          <div class="info-row">
+            <span class="label">Region:</span>
+            <span class="value">{{ vmInfo.regionText }}</span>
+          </div>
+          <div class="info-row">
+            <span class="label">Ngày tạo:</span>
+            <span class="value">{{ vmInfo.ngayTao | date:'dd/MM/yyyy HH:mm' }}</span>
+          </div>
+        </div>
+
+        <!-- Mạng & IP -->
+        <div class="info-card">
+          <h4>Mạng & IP</h4>
+          <div class="info-row">
+            <span class="label">IP Public:</span>
+            <span class="value">{{ vmInfo.ipPublic || (isProvisioning ? 'Đang cấp phát...' : 'Không đăng ký') }}</span>
+          </div>
+          <div class="info-row">
+            <span class="label">IP Private:</span>
+            <span class="value">{{ vmInfo.ipPrivate || (isProvisioning ? 'Đang cấp phát...' : 'N/A') }}</span>
+          </div>
+        </div>
+
+        <!-- Cấu hình phần cứng -->
+        <div class="info-card">
+          <h4>Cấu hình</h4>
+          <div class="info-row">
+            <span class="label">Package:</span>
+            <span class="value">{{ vmInfo.tenCauHinhGia }}</span>
+          </div>
+          <div class="info-row">
+            <span class="label">CPU:</span>
+            <span class="value">{{ vmInfo.cpu }} Core</span>
+          </div>
+          <div class="info-row">
+            <span class="label">RAM:</span>
+            <span class="value">{{ vmInfo.ram }}</span>
+          </div>
+          <div class="info-row">
+            <span class="label">Volume:</span>
+            <span class="value">{{ vmInfo.hdd || vmInfo.sizeGbVolume }} GB ({{ vmInfo.volumeTypeCode }})</span>
+          </div>
+        </div>
+
+        <!-- Hệ điều hành -->
+        <div class="info-card">
+          <h4>Hệ điều hành</h4>
+          <div class="info-row">
+            <span class="label">OS:</span>
+            <span class="value">{{ vmInfo.tenHeDieuHanh }}</span>
+          </div>
+          <div class="info-row">
+            <span class="label">Image ID:</span>
+            <span class="value code-font">{{ vmInfo.imageId }}</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Call To Actions -->
+      <div *ngIf="isActive" class="cta-section">
+        <h4>Hành động thao tác</h4>
+        <div class="cta-buttons">
+          <button class="btn btn-primary btn-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 8l4 4-4 4 M13 16h4"/></svg>
+            Mở Web Console
+          </button>
+          <button class="btn btn-outline btn-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20 M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            Cấu hình mạng (Security Group)
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

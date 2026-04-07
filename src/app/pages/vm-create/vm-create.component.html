@@ -1,0 +1,202 @@
+<div class="vm-wizard-page">
+    <div class="vm-wizard-container">
+        
+        <h2>Tạo mới máy ảo</h2>
+        
+        <!-- STEPPER -->
+        <div class="stepper">
+            <div class="step" [class.active]="currentStep === 1" [class.completed]="currentStep > 1" (click)="setStep(1)">1. Chọn loại máy ảo</div>
+            <div class="step" [class.active]="currentStep === 2" [class.completed]="currentStep > 2" (click)="setStep(2)">2. Nhập thông tin máy ảo</div>
+            <div class="step" [class.active]="currentStep === 3" [class.completed]="currentStep > 3" (click)="setStep(3)">3. Cấu hình</div>
+            <div class="step" [class.active]="currentStep === 4" [class.completed]="currentStep > 4" (click)="setStep(4)">4. Custom</div>
+            <div class="step" [class.active]="currentStep === 5" [class.completed]="currentStep > 5" (click)="setStep(5)">5. Chọn hệ điều hành</div>
+            <div class="step" [class.active]="currentStep === 6" [class.completed]="currentStep > 6" (click)="setStep(6)">6. Hoàn thành</div>
+        </div>
+
+        <div *ngIf="error" class="alert alert-error">{{ error }}</div>
+        <div *ngIf="success" class="alert alert-success">{{ success }}</div>
+
+        <!-- STEP 1 -->
+        <div class="step-content" *ngIf="currentStep === 1">
+            <h3 class="step-title">Loại máy ảo</h3>
+            <p class="step-desc">Vui lòng chọn loại máy ảo.</p>
+            <div class="form-row align-center">
+                <label class="form-label">Loại máy ảo:</label>
+                <select class="form-control" [(ngModel)]="vmForm.loaiMayAo">
+                    <option value="Boot Từ Volume">Boot Từ Volume</option>
+                </select>
+                <button class="btn btn-primary" (click)="nextStep()">Tiếp tục ➔</button>
+            </div>
+        </div>
+
+        <!-- STEP 2 -->
+        <div class="step-content" *ngIf="currentStep === 2">
+            <h3 class="step-title">Thông tin máy ảo</h3>
+            <p class="step-desc">Vui lòng điền thông tin máy ảo.</p>
+            <div class="form-row align-center">
+                <label class="form-label">Tên máy ảo:</label>
+                <input type="text" class="form-control" [(ngModel)]="vmForm.tenMayAo">
+                <button class="btn btn-primary" (click)="nextStep()">Tiếp tục ➔</button>
+            </div>
+            
+            <div class="form-row checkbox-row">
+                <label class="checkbox-label">
+                    <input type="checkbox" [(ngModel)]="vmForm.useIpPublic"> Sử dụng Ip Public
+                </label>
+                <label class="checkbox-label">
+                    <input type="checkbox" [(ngModel)]="vmForm.useIpPrivate"> Sử dụng Ip Private
+                </label>
+            </div>
+
+            <!-- Choose network if Private IP selected -->
+            <div class="form-row align-center mt-3" *ngIf="vmForm.useIpPrivate">
+                <label class="form-label">Mạng (*): </label>
+                <div style="flex:1">
+                    <select class="form-control" [(ngModel)]="vmForm.networkId">
+                        <option value="">-- Chọn mạng --</option>
+                        <option *ngFor="let net of networks" [value]="net.networkCloudId">{{ net.name }}</option>
+                    </select>
+                    <small *ngIf="networks.length === 0" style="color: #dc3545; font-size: 12px;">
+                        &#9888; Bạn chưa có mạng nào. Vui lòng tạo mạng trước khi khởi tạo VM.
+                    </small>
+                </div>
+            </div>
+        </div>
+
+        <!-- STEP 3 -->
+        <div class="step-content" *ngIf="currentStep === 3">
+            <h3 class="step-title">Chọn cấu hình</h3>
+            <p class="step-desc">Vui lòng chọn một trong các cấu hình sau.</p>
+            
+            <h4 class="flavor-group-title">Nhóm cấu hình SSD</h4>
+            <div class="flavor-grid">
+                <div class="flavor-card" *ngFor="let f of flavorsSSD" 
+                     [class.selected]="vmForm.cauHinhGiaId === f.id"
+                     (click)="vmForm.cauHinhGiaId = f.id; vmForm.volumeTypeCode = 'SSD'; vmForm.sizeGbVolume = getFlavorSpec(f, 'DISK')?.soLuong || 20">
+                    <div class="flavor-header">{{ getFlavorName(f) || 'CLOUD' }}</div>
+                    <div class="flavor-body">
+                        <ul>
+                            <li>CPU <strong>{{ getFlavorSpec(f, 'CPU')?.soLuong || '?' }} Core</strong></li>
+                            <li>RAM <strong>{{ getFlavorSpec(f, 'RAM')?.soLuong || '?' }} GB</strong></li>
+                            <li>SSD <strong>{{ getFlavorSpec(f, 'DISK')?.soLuong || '?' }}GB</strong></li>
+                            <li>Băng thông NIX/QT<br><strong>0 Mbps / 0 Mbps</strong></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <h4 class="flavor-group-title mt-4">Nhóm cấu hình HDD</h4>
+            <div class="flavor-grid">
+                <div class="flavor-card" *ngFor="let f of flavorsHDD" 
+                     [class.selected]="vmForm.cauHinhGiaId === f.id"
+                     (click)="vmForm.cauHinhGiaId = f.id; vmForm.volumeTypeCode = 'HDD'; vmForm.sizeGbVolume = getFlavorSpec(f, 'DISK')?.soLuong || 20">
+                    <div class="flavor-header">{{ getFlavorName(f) || 'CLOUD' }}</div>
+                    <div class="flavor-body">
+                        <ul>
+                            <li>CPU <strong>{{ getFlavorSpec(f, 'CPU')?.soLuong || '?' }} Core</strong></li>
+                            <li>RAM <strong>{{ getFlavorSpec(f, 'RAM')?.soLuong || '?' }} GB</strong></li>
+                            <li>HDD <strong>{{ getFlavorSpec(f, 'DISK')?.soLuong || '?' }}GB</strong></li>
+                            <li>Băng thông NIX/QT<br><strong>0 Mbps / 0 Mbps</strong></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <button class="btn btn-primary" (click)="nextStep()" [disabled]="!vmForm.cauHinhGiaId">Tiếp tục ➔</button>
+            </div>
+        </div>
+
+        <!-- STEP 4 -->
+        <div class="step-content" *ngIf="currentStep === 4">
+            <h3 class="step-title">Chọn cấu hình CPU</h3>
+            <p class="step-desc">Vui lòng chọn thêm dung lượng cpu.</p>
+            <div class="slider-row">
+                <label>Số lượng cpu</label>
+                <div class="slider-container">
+                    <span class="slider-min badge">CPU {{ vmForm.customCpu || 0 }} Core</span>
+                    <input type="range" class="range-slider" min="0" max="64" [(ngModel)]="vmForm.customCpu">
+                    <span class="slider-max">CPU 64 Core</span>
+                </div>
+            </div>
+
+            <h3 class="step-title mt-4">Chọn cấu hình RAM</h3>
+            <p class="step-desc">Vui lòng chọn thêm dung lượng ram.</p>
+            <div class="slider-row">
+                <label>Dung lượng ram</label>
+                <div class="slider-container">
+                    <span class="slider-min badge">RAM {{ vmForm.customRam || 0 }} GB</span>
+                    <input type="range" class="range-slider" min="0" max="64" [(ngModel)]="vmForm.customRam">
+                    <span class="slider-max">RAM 64 GB</span>
+                </div>
+            </div>
+
+            <h3 class="step-title mt-4">Chọn cấu hình Volume</h3>
+            <p class="step-desc">Vui lòng chọn thêm dung lượng volume.</p>
+            <div class="slider-row">
+                <label>Dung lượng volume</label>
+                <div class="slider-container">
+                    <span class="slider-min badge">Disk {{ vmForm.sizeGbVolume || 0 }} GB</span>
+                    <input type="range" class="range-slider" min="0" max="1000" [(ngModel)]="vmForm.sizeGbVolume">
+                    <span class="slider-max">Disk 1 000 GB</span>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <button class="btn btn-primary" (click)="nextStep()">Tiếp tục ➔</button>
+            </div>
+        </div>
+
+        <!-- STEP 5 -->
+        <div class="step-content" *ngIf="currentStep === 5">
+            <h3 class="step-title">Hệ điều hành</h3>
+            <div class="form-row align-center">
+                <label class="form-label required">Hệ điều hành (*):</label>
+                
+                <div class="os-selection d-flex flex-column gap-2">
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" value="Windows" [(ngModel)]="selectedOsFamily"> Windows
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" value="Linux" [(ngModel)]="selectedOsFamily"> Linux
+                        </label>
+                    </div>
+                    
+                    <select class="form-control" [(ngModel)]="vmForm.heDieuHanhId">
+                        <option [ngValue]="null">-- Chọn phiên bản --</option>
+                        <option *ngFor="let os of filteredOS" [ngValue]="os.id">{{ os.ten }}</option>
+                    </select>
+                    <small style="color:#666; font-size:12px;">
+                        Loaded: {{ operatingSystems.length }} OS | Filtered: {{ filteredOS.length }} | Family: {{ selectedOsFamily }}
+                    </small>
+                </div>
+
+                <button class="btn btn-primary" style="margin-left:auto" (click)="nextStep()" [disabled]="!vmForm.heDieuHanhId">Tiếp tục ➔</button>
+            </div>
+        </div>
+
+        <!-- STEP 6 -->
+        <div class="step-content" *ngIf="currentStep === 6">
+            <h3 class="step-title">Hoàn thành</h3>
+            <p class="step-desc">Vui lòng xác nhận thông tin trước khi tạo máy ảo.</p>
+            
+            <div class="summary-box">
+                <p><strong>Tên máy ảo:</strong> {{ vmForm.tenMayAo }}</p>
+                <p><strong>Loại máy ảo:</strong> {{ vmForm.loaiMayAo }}</p>
+                <p><strong>Region:</strong> {{ vmForm.regionText }}</p>
+                <p><strong>Volume:</strong> {{ vmForm.sizeGbVolume }}GB ({{ vmForm.volumeTypeCode }})</p>
+                <p><strong>Thời gian:</strong> {{ vmForm.thoiGianSuDung }} Tháng</p>
+            </div>
+
+            <div class="mt-4 text-center">
+                <button class="btn btn-outline mr-2" (click)="setStep(1)">Quay lại sửa</button>
+                <button class="btn btn-primary" (click)="onSubmit()" [disabled]="loading">
+                    <span *ngIf="loading">Đang thực hiện...</span>
+                    <span *ngIf="!loading">Khởi tạo Server</span>
+                </button>
+            </div>
+        </div>
+
+    </div>
+</div>

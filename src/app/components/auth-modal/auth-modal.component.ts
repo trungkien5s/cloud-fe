@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, OnInit } from '@angular/core';
+import { Component, EventEmitter, Output, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
@@ -67,7 +67,10 @@ export class AuthModalComponent implements OnInit {
         captchaImageBase64: ''
     };
 
-    constructor(private authService: AuthService) { }
+    constructor(
+        private authService: AuthService,
+        private cdr: ChangeDetectorRef
+    ) { }
 
     ngOnInit() {
         this.loadCaptcha();
@@ -151,6 +154,7 @@ export class AuthModalComponent implements OnInit {
                         this.isLoading = false;
                         this.errorMessage = err?.error?.message || err?.message || 'Đăng nhập thất bại. Kiểm tra lại thông tin!';
                         this.loadCaptcha(); // Reload captcha on error
+                        this.cdr.detectChanges();
                     }
                 });
                 break;
