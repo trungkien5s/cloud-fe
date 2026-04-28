@@ -1,22 +1,27 @@
-<div class="pricing-container">
-    <h1 class="pricing-title">BẢNG GIÁ DỊCH VỤ CLOUD</h1>
+<div class="portal-page pricing-page">
+  <div class="portal-shell">
+    <div class="portal-page-header">
+        <div>
+            <h1 class="portal-page-title">Bảng giá dịch vụ Cloud</h1>
+            <p class="portal-page-subtitle">So sánh nhanh cấu hình máy ảo theo loại ổ đĩa và chọn gói phù hợp để thêm vào giỏ hàng.</p>
+        </div>
+    </div>
 
     <!-- Tabs -->
-    <div class="pricing-tabs">
-        <button class="pricing-tab" [class.active]="activeTab === 'HDD'" (click)="setTab('HDD')">
-            Ổ cứng HDD
-        </button>
-        <button class="pricing-tab" [class.active]="activeTab === 'SSD'" (click)="setTab('SSD')">
-            Ổ cứng SSD
-        </button>
-    </div>
+    <nz-radio-group class="pricing-tabs" [(ngModel)]="activeTab">
+        <label nz-radio-button nzValue="HDD">Ổ cứng HDD</label>
+        <label nz-radio-button nzValue="SSD">Ổ cứng SSD</label>
+    </nz-radio-group>
 
     <!-- Cards Layout -->
     @if(loading) {
-        <div style="text-align: center; padding: 40px; color: #666; font-size: 18px;">
-            Đang tải dữ liệu cấu hình...
+        <div style="text-align: center; padding: 40px;">
+            <nz-spin nzTip="Đang tải dữ liệu cấu hình..."></nz-spin>
         </div>
     } @else {
+        @if((activeTab === 'HDD' ? hddPlans : ssdPlans).length === 0) {
+            <nz-empty nzNotFoundContent="Không có gói cấu hình khả dụng"></nz-empty>
+        }
         <div class="pricing-cards">
             @for(plan of (activeTab === 'HDD' ? hddPlans : ssdPlans); track plan.name) {
             <div class="pricing-card">
@@ -67,14 +72,13 @@
 
                 <div class="pricing-card-footer">
                     <span class="price-text">{{ plan.price }} đ</span>
-                    <button class="buy-btn" (click)="buyPlan(plan)">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                            <path d="M5 12h14M12 5l7 7-7 7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
+                    <button nz-button nzType="primary" nzShape="circle" class="buy-btn" (click)="buyPlan(plan)">
+                        <span nz-icon nzType="arrow-right"></span>
                     </button>
                 </div>
             </div>
         }
         </div>
     }
+  </div>
 </div>

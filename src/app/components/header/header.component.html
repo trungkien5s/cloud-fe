@@ -4,8 +4,8 @@
 
         <nav class="hdr__nav">
             @for (link of navLinks; track link.label; let i = $index) {
-            <a class="hdr__nav-link" [class.hdr__nav-link--active]="i === 0" [href]="'#' + link.id"
-                (click)="i === 0 ? onServiceNavClick($event) : scrollToSection(link.id, $event)" data-nav>
+            <a class="hdr__nav-link" [class.hdr__nav-link--active]="activeNav() === link.id" [href]="'#' + link.id"
+                (click)="scrollToSection(link.id, $event)" data-nav>
                 {{ link.label }}
             </a>
             }
@@ -13,27 +13,19 @@
 
         <div class="hdr__cta">
             @if (!currentUser()) {
-            <img [src]="assets.userIcon" alt="Đăng nhập" class="hdr__user-icon" (click)="openAuthModal()"
-                style="cursor: pointer;" title="Đăng nhập" />
+            <button nz-button nzType="text" nzShape="circle" class="hdr__login-btn" (click)="openAuthModal()" title="Đăng nhập">
+                <span nz-icon nzType="user"></span>
+            </button>
             } @else {
             <div style="display: flex; align-items: center; gap: 16px;">
                 <!-- My VMs Dropdown -->
                 <div class="vm-dropdown-container" style="position: relative;">
-                    <div style="display: flex; align-items: center; justify-content: center; padding: 6px 12px; background-color: #F0F6FF; border-radius: 20px; cursor: pointer; color: #003159; font-weight: 600; font-size: 14px; gap: 6px;"
+                    <button nz-button nzType="default" nzShape="round" class="hdr__vm-button"
                         (click)="toggleVmDropdown($event)">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                            <rect x="2" y="2" width="20" height="8" rx="2" stroke="#003159" stroke-width="2"/>
-                            <rect x="2" y="14" width="20" height="8" rx="2" stroke="#003159" stroke-width="2"/>
-                            <line x1="6" y1="6" x2="6.01" y2="6" stroke="#003159" stroke-width="2" stroke-linecap="round"/>
-                            <line x1="6" y1="18" x2="6.01" y2="18" stroke="#003159" stroke-width="2" stroke-linecap="round"/>
-                        </svg>
+                        <span nz-icon nzType="cloud-server"></span>
                         Máy ảo của tôi
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style="margin-left: 2px;"
-                            [style.transform]="showVmDropdown() ? 'rotate(180deg)' : 'none'"
-                            style="transition: transform 0.2s;">
-                            <path d="M6 9l6 6 6-6" stroke="#003159" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                        </svg>
-                    </div>
+                        <span nz-icon nzType="down" [class.hdr__icon-open]="showVmDropdown()"></span>
+                    </button>
 
                     <!-- Dropdown Menu -->
                     @if(showVmDropdown()) {
@@ -44,12 +36,12 @@
                         </div>
                         <div style="max-height: 300px; overflow-y: auto;">
                             @if(isLoadingVMs()) {
-                                <div style="padding: 20px; text-align: center; color: #666; font-size: 13px;">
-                                    Đang tải dữ liệu...
+                                <div style="padding: 20px; text-align: center;">
+                                    <nz-spin nzSimple></nz-spin>
                                 </div>
                             } @else if (myVMs().length === 0) {
-                                <div style="padding: 20px; text-align: center; color: #666; font-size: 13px;">
-                                    Bạn chưa tạo máy ảo nào.
+                                <div style="padding: 20px;">
+                                    <nz-empty nzNotFoundContent="Bạn chưa tạo máy ảo nào."></nz-empty>
                                 </div>
                             } @else {
                                 @for(vm of myVMs(); track vm.id) {
@@ -57,9 +49,9 @@
                                         style="display: flex; flex-direction: column; padding: 12px 16px; text-decoration: none; border-bottom: 1px solid #f0f0f0; transition: background 0.2s;">
                                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
                                             <span style="font-weight: 600; color: #003159; font-size: 14px;">{{ vm.ten }}</span>
-                                            <span [style.color]="vm.trangThai === 'ACTIVE' ? '#10b981' : '#f59e0b'" style="font-size: 11px; font-weight: 600;">
+                                            <nz-tag [nzColor]="vm.trangThai === 'ACTIVE' ? 'success' : 'processing'" style="font-size: 11px; font-weight: 600;">
                                                 {{ vm.trangThai }}
-                                            </span>
+                                            </nz-tag>
                                         </div>
                                         <div style="display: flex; justify-content: space-between; font-size: 12px; color: #666;">
                                             <span>{{ vm.ipPublic || vm.ipPrivate || 'Đang cấp IP' }}</span>
@@ -73,26 +65,10 @@
                     }
                 </div>
 
-                <!-- Bell icon with notification count -->
-                <div
-                    style="position: relative; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; background-color: #F0F6FF; border-radius: 50%;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="#003159">
-                        <path
-                            d="M12 22A2 2 0 0 0 14 20H10A2 2 0 0 0 12 22ZM18 16V11C18 7.93 16.36 5.36 13.5 4.68V4C13.5 3.17 12.83 2.5 12 2.5C11.17 2.5 10.5 3.17 10.5 4V4.68C7.63 5.36 6 7.92 6 11V16L4 18V19H20V18L18 16Z" />
-                    </svg>
-                    <!-- Badge -->
-                    <span
-                        style="position: absolute; top: -4px; right: -4px; background-color: #F58220; color: white; font-size: 11px; font-weight: bold; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                        4
-                    </span>
-                </div>
-
                 <!-- User profile block with Dropdown -->
-                <div class="user-dropdown-container" style="position: relative;">
-                    <div style="display: flex; align-items: center; gap: 8px; background-color: #F0F6FF; padding: 4px 16px 4px 4px; border-radius: 20px; cursor: pointer;"
-                        (click)="toggleUserDropdown($event)">
-                        <img src="https://i.pravatar.cc/150?u=admin_user" alt="Avatar"
-                            style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover;" />
+                <div class="user-dropdown-container" style="position: relative;" (mouseenter)="showUserDropdown.set(true)" (mouseleave)="showUserDropdown.set(false)">
+                    <div style="display: flex; align-items: center; gap: 8px; background-color: #F0F6FF; padding: 4px 16px 4px 4px; border-radius: 20px; cursor: pointer;">
+                        <nz-avatar nzSize="small" nzSrc="https://i.pravatar.cc/150?u=admin_user"></nz-avatar>
                         <span style="color: #003159; font-weight: 600; font-size: 15px;">{{ currentUser()?.username ||
                             'Thành viên' }}</span>
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="margin-left: 4px;"
@@ -105,41 +81,20 @@
 
                     <!-- Dropdown Menu -->
                     @if(showUserDropdown()) {
-                    <div
-                        style="position: absolute; top: calc(100% + 8px); right: 0; background: white; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); width: 220px; z-index: 1000; overflow: hidden; border: 1px solid #eaeaea;">
+                    <div class="user-dropdown-menu">
                         <a routerLink="/profile" (click)="closeUserDropdown()"
                             style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; color: #333; text-decoration: none; border-bottom: 1px solid #f0f0f0; transition: background 0.2s;">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"
-                                    stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                            </svg>
+                            <span nz-icon nzType="user"></span>
                             <span style="font-size: 14px; font-weight: 500;">Thông tin cá nhân</span>
-                        </a>
-                        <a routerLink="/vm/create" (click)="closeUserDropdown()"
-                            style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; color: #333; text-decoration: none; border-bottom: 1px solid #f0f0f0; transition: background 0.2s;">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                                <circle cx="12" cy="12" r="10" stroke="#666" stroke-width="2"/>
-                                <line x1="12" y1="8" x2="12" y2="16" stroke="#666" stroke-width="2"/>
-                                <line x1="8" y1="12" x2="16" y2="12" stroke="#666" stroke-width="2"/>
-                            </svg>
-                            <span style="font-size: 14px; font-weight: 500;">Tạo máy ảo</span>
                         </a>
                         <a routerLink="/change-password" (click)="closeUserDropdown()"
                             style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; color: #333; text-decoration: none; border-bottom: 1px solid #f0f0f0; transition: background 0.2s;">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke="#666" stroke-width="2"
-                                    stroke-linecap="round" stroke-linejoin="round" />
-                                <path d="M7 11V7a5 5 0 0 1 10 0v4" stroke="#666" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round" />
-                            </svg>
+                            <span nz-icon nzType="lock"></span>
                             <span style="font-size: 14px; font-weight: 500;">Đổi mật khẩu</span>
                         </a>
                         <a href="javascript:void(0)" (click)="onLogout()"
                             style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; color: #dc3545; text-decoration: none; transition: background 0.2s;">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" stroke="#dc3545"
-                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                            </svg>
+                            <span nz-icon nzType="logout"></span>
                             <span style="font-size: 14px; font-weight: 500;">Đăng xuất</span>
                         </a>
                     </div>
@@ -148,79 +103,125 @@
             </div>
             }
 
-            <button class="btn-primary" (click)="onOpenConsultPopup()" style="margin-left: 16px;">
-                <img src="/Icon.svg" alt="Tư vấn">
+            <button nz-button nzType="primary" class="btn-primary" (click)="onOpenConsultPopup()" style="margin-left: 16px;">
+                <span nz-icon nzType="customer-service"></span>
                 Yêu cầu tư vấn
             </button>
         </div>
     </div>
 </header>
 
-@if (showServiceMenu()) {
-<div class="menu-overlay" (click)="closeServiceMenu()"></div>
-
-<div class="svc-menu" data-menu>
-    <div class="svc-menu__left">
-        <div class="svc-menu__list">
-            <div class="svc-menu__item svc-menu__item--active" (click)="setMenuCategory('featured')">
-                <span class="svc-menu__item-label">Dịch vụ nổi bật</span>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                    <path d="M9 18l6-6-6-6" stroke="white" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round" />
-                </svg>
-            </div>
-            @for (cat of serviceCategories; track cat.id) {
-            <div class="svc-menu__item" [class.svc-menu__item--selected]="menuCategory() === cat.id"
-                (click)="setMenuCategory(cat.id)">
-                <span class="svc-menu__item-label">{{ cat.label }}</span>
-            </div>
-            }
-        </div>
-    </div>
-
-    <div class="svc-menu__right">
-        <div class="svc-menu__banner">
-            <img [src]="assets.menuBanner" alt="Dịch vụ nổi bật" class="svc-menu__banner-img" />
-            <div class="svc-menu__dots">
-                <span class="svc-menu__dot svc-menu__dot--on"></span>
-                <span class="svc-menu__dot"></span>
-                <span class="svc-menu__dot"></span>
-                <span class="svc-menu__dot"></span>
-                <span class="svc-menu__dot"></span>
-            </div>
-        </div>
-
-        <div class="svc-menu__desc">
-            <h3 class="svc-menu__title">Dịch vụ nổi bật</h3>
-            <p class="svc-menu__body">
-                Cơ sở hạ tầng được thiết kế để hỗ trợ khách hàng xây dựng và cung cấp các dịch vụ đám mây đáng tin
-                cậy và các phương pháp DevOps với chi phí hiệu quả.
-            </p>
-            <a class="svc-menu__link" href="#">
-                Xem chi tiết
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                    <path d="M9 18l6-6-6-6" stroke="#006EF5" stroke-width="2" stroke-linecap="round" />
-                </svg>
-            </a>
-        </div>
-
-        <div class="svc-menu__cards">
-            @for (card of menuServiceCards; track card.title) {
-            <div class="svc-menu__card">
-                <div class="svc-menu__card-icon">
-                    <img [src]="card.img" [alt]="card.title" class="svc-menu__card-icon-img" />
-                </div>
-                <div class="svc-menu__card-info">
-                    <p class="svc-menu__card-title">{{ card.title }}</p>
-                    <p class="svc-menu__card-sub">{{ card.subtitle }}</p>
-                </div>
-            </div>
-            }
-        </div>
-    </div>
-</div>
-}
-
 @if (showAuthModal()) {
 <app-auth-modal (close)="closeAuthModal()"></app-auth-modal>
 }
+
+    <!-- ══════════════════════════════════════════
+       CONSULTATION POPUP MODAL
+       Figma: node 31:105094 (overlay) + 31:105095 (popup)
+  ══════════════════════════════════════════ -->
+    @if (showConsultPopup()) {
+    <!-- Dark overlay — node 31:105094 -->
+    <div class="popup-backdrop" (click)="closeConsultPopup()"></div>
+
+    <!-- Popup panel — node 31:105095 -->
+    <div class="popup" role="dialog" aria-modal="true" aria-labelledby="popup-title">
+
+        <!-- ═══ FORM STATE ═══ -->
+        @if (!consultSubmitted()) {
+        <!-- Header: banner image + overlay title + close -->
+        <div class="popup__header">
+            <div class="popup__banner">
+                <img [src]="assets.popupBanner" alt="" class="popup__banner-img" />
+                <div class="popup__banner-overlay"></div>
+                <div class="popup__banner-dots">
+                    <span class="popup__dot popup__dot--on"></span>
+                    <span class="popup__dot"></span>
+                    <span class="popup__dot"></span>
+                    <span class="popup__dot"></span>
+                    <span class="popup__dot"></span>
+                </div>
+            </div>
+            <div class="popup__title-bar">
+                <h2 class="popup__title" id="popup-title">Yêu cầu tư vấn</h2>
+                <button nz-button nzType="text" nzShape="circle" class="popup__close" aria-label="Đóng" (click)="closeConsultPopup()">
+                    <span nz-icon nzType="close"></span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Form body -->
+        <div class="popup__body">
+            <div class="popup__form">
+                <div class="popup__field">
+                    <input nz-input class="popup__input" type="text" placeholder="Họ &amp; tên" [(ngModel)]="consultForm.name" />
+                </div>
+                <div class="popup__field">
+                    <input nz-input class="popup__input" type="tel" placeholder="Số điện thoại"
+                        [(ngModel)]="consultForm.phone" />
+                </div>
+                <div class="popup__field">
+                    <input nz-input class="popup__input" type="text" placeholder="Công ty" [(ngModel)]="consultForm.company" />
+                </div>
+                <div class="popup__field">
+                    <textarea nz-input class="popup__textarea" placeholder="Ghi chú" rows="4"
+                        [(ngModel)]="consultForm.note"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer: submit button -->
+        <div class="popup__footer">
+            <button nz-button nzType="primary" class="popup__submit" (click)="submitConsultForm()">
+                <span nz-icon nzType="send"></span>
+                Gửi yêu cầu
+            </button>
+        </div>
+        }
+
+        <!-- ═══ SUCCESS STATE ═══ -->
+        @if (consultSubmitted()) {
+        <div class="success__wrapper">
+            <!-- Close button top-right -->
+            <div class="success__close-bar">
+                <button nz-button nzType="text" nzShape="circle" class="popup__close" aria-label="Đóng" (click)="closeConsultPopup()">
+                    <span nz-icon nzType="close"></span>
+                </button>
+            </div>
+
+            <!-- Body: illustration + text -->
+            <div class="success__body">
+                <!-- Paper plane illustration (Figma: 280x280 "send" component) -->
+                <div class="success__illustration">
+                    <div class="success__send">
+                        <img [src]="assets.successVector" alt="" class="success__layer success__layer--vector" />
+                        <img [src]="assets.successGroup" alt="" class="success__layer success__layer--group" />
+                        <img [src]="assets.successGroup1" alt="" class="success__layer success__layer--group1" />
+                    </div>
+                </div>
+
+                <!-- Success text -->
+                <div class="success__content">
+                    <h2 class="success__title">Gửi yêu cầu thành công</h2>
+                    <div class="success__desc">
+                        <p>Nhân viên tư vấn sẽ liên hệ với bạn trong vòng 10-15 phút.</p>
+                        <p>Vui lòng chờ trong giây lát.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer: buttons -->
+            <div class="success__actions">
+                <div class="success__btn-group">
+                    <button nz-button class="success__btn success__btn--outline" (click)="closeConsultPopup()">
+                        Về trang chủ
+                    </button>
+                    <button nz-button nzType="primary" class="success__btn success__btn--primary" (click)="closeConsultPopup()">
+                        Đã hiểu
+                    </button>
+                </div>
+            </div>
+        </div>
+        }
+
+    </div>
+    }

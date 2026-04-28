@@ -1,0 +1,342 @@
+.cart-page {
+    font-family: 'Inter', 'Roboto', sans-serif;
+    color: #333;
+}
+
+/* Stepper */
+.stepper-wrapper {
+    margin-bottom: 25px;
+    padding: 20px 24px;
+    background: #fff;
+    border: 1px solid #e4e7ec;
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(15, 39, 66, 0.06);
+}
+
+.stepper-item {
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+    font-weight: 500;
+    color: #666;
+}
+
+.stepper-item.active {
+    color: #006EF5;
+}
+
+.step-counter {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 12px;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.step-counter.progress-circle {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 4px solid #f0f0f0;
+    border-top-color: #006EF5;
+    border-right-color: #006EF5;
+    transform: rotate(-45deg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+    font-size: 13px;
+    color: #006EF5;
+    background: transparent;
+}
+
+.step-counter.progress-circle::after {
+    content: "1 of 4";
+    transform: rotate(45deg); /* rotate back the text */
+}
+
+/* Hide original text inside progress-circle if any */
+.step-counter.progress-circle {
+    color: transparent;
+}
+
+.text-primary {
+    color: #006EF5 !important;
+}
+
+.stepper-item.active .step-counter:not(.progress-circle) {
+    background-color: #f0f7ff;
+    color: #006EF5;
+    border: 2px solid #006EF5;
+}
+
+/* For inactive steps we use text circles like (2) */
+.step-counter.circle {
+    width: auto;
+    height: auto;
+    margin-right: 8px;
+    font-weight: normal;
+    color: #666;
+}
+
+.step-name {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.chevron {
+    margin-left: 30px;
+    margin-right: 0px;
+    color: #999;
+}
+
+.cart-gradient-line {
+    height: 2px;
+    background: linear-gradient(to right, #fdb913 0%, #dc3545 15%, transparent 20%);
+    margin-bottom: 40px;
+}
+
+/* Layout */
+.cart-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 360px;
+    gap: 40px;
+    align-items: flex-start;
+}
+
+.cart-items-section {
+    min-width: 0;
+    background: #fff;
+    border: 1px solid #e4e7ec;
+    border-radius: 8px;
+    padding: 24px;
+    box-shadow: 0 8px 24px rgba(15, 39, 66, 0.06);
+}
+
+.summary-section {
+    background: #fff;
+    border: 1px solid #e4e7ec;
+    border-radius: 8px;
+    padding: 24px;
+    box-shadow: 0 8px 24px rgba(15, 39, 66, 0.06);
+    position: sticky;
+    top: 24px;
+}
+
+/* Cart Items */
+.cart-items-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.cart-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #0056b3;
+    margin: 0;
+    text-transform: uppercase;
+}
+
+.btn-clear {
+    display: flex;
+    align-items: center;
+    background: transparent;
+    border: 1px solid #ffcccc;
+    color: #dc3545;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-clear:hover {
+    background: #fff0f0;
+}
+
+.cart-empty {
+    padding: 40px;
+    text-align: center;
+    background: #f8f9fa;
+    border-radius: 8px;
+    color: #666;
+}
+
+.cart-item {
+    display: flex;
+    align-items: center;
+    background: #fdfdfd;
+    border: 1px solid #f0f0f0;
+    padding: 16px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    gap: 15px;
+    transition: box-shadow 0.2s;
+}
+
+.cart-item:hover {
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+}
+
+.item-img {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.item-name {
+    font-weight: 700;
+    color: #006EF5;
+    font-size: 16px;
+    min-width: 100px;
+}
+
+.item-control {
+    flex: 1;
+}
+
+.form-select {
+    width: 100%;
+    min-width: 160px;
+}
+
+.form-select:focus {
+    border-color: #006EF5;
+}
+
+.item-price {
+    font-weight: 600;
+    font-size: 15px;
+    color: #333;
+    min-width: 110px;
+    text-align: right;
+}
+
+.btn-remove {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    transition: background 0.2s;
+}
+
+.btn-remove:hover {
+    background: #f1f3f5;
+}
+
+/* Summary Box */
+.discount-box {
+    display: flex;
+    gap: 0;
+    margin-bottom: 30px;
+}
+
+.input-discount {
+    flex: 1;
+    border-radius: 8px 0 0 8px;
+}
+
+.input-discount:focus {
+    border-color: #006EF5;
+}
+
+.btn-apply {
+    background: #006EF5;
+    color: white;
+    border: none;
+    padding: 0 20px;
+    border-radius: 0 8px 8px 0;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-apply:hover {
+    background: #0056b3;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    align-items: center;
+    font-size: 14px;
+}
+
+.summary-divider {
+    border: none;
+    border-top: 1px dashed #ddd;
+    margin: 20px 0;
+}
+
+.btn-checkout {
+    width: 100%;
+    padding: 14px;
+    background: #006EF5;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 12px;
+    transition: background 0.2s, transform 0.1s;
+}
+
+.btn-checkout:hover {
+    background: #0056b3;
+}
+
+.btn-checkout:active {
+    transform: scale(0.98);
+}
+
+.btn-continue {
+    width: 100%;
+    padding: 14px;
+    background: #f8f9fa;
+    color: #006EF5;
+    border: 1px solid #006EF5;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-continue:hover {
+    background: #e9f2ff;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .cart-layout {
+        grid-template-columns: 1fr;
+    }
+    .summary-section {
+        width: 100%;
+        position: static;
+    }
+    .cart-item {
+        flex-wrap: wrap;
+    }
+    .item-control {
+        min-width: 150px;
+    }
+    .stepper-wrapper {
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+}

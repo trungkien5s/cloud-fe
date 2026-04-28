@@ -1,11 +1,27 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
+import { NzAlertModule } from 'ng-zorro-antd/alert';
+import { NzAvatarModule } from 'ng-zorro-antd/avatar';
+import { NzCardModule } from 'ng-zorro-antd/card';
+import { NzDescriptionsModule } from 'ng-zorro-antd/descriptions';
+import { NzIconModule } from 'ng-zorro-antd/icon';
+import { NzSpinModule } from 'ng-zorro-antd/spin';
+import { NzTagModule } from 'ng-zorro-antd/tag';
 
 @Component({
     selector: 'app-profile',
     standalone: true,
-    imports: [CommonModule],
+    imports: [
+        CommonModule,
+        NzAlertModule,
+        NzAvatarModule,
+        NzCardModule,
+        NzDescriptionsModule,
+        NzIconModule,
+        NzSpinModule,
+        NzTagModule
+    ],
     templateUrl: './profile.component.html',
     styleUrls: ['./profile.component.css']
 })

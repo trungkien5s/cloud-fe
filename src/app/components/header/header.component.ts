@@ -1,16 +1,36 @@
 import { Component, EventEmitter, Output, signal, HostListener, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
 import { AuthService, AuthUser } from '../../services/auth.service';
 import { AuthModalComponent } from '../auth-modal/auth-modal.component';
 import { VmService } from '../../services/vm.service';
+import { NzAvatarModule } from 'ng-zorro-antd/avatar';
+import { NzButtonModule } from 'ng-zorro-antd/button';
+import { NzEmptyModule } from 'ng-zorro-antd/empty';
+import { NzIconModule } from 'ng-zorro-antd/icon';
+import { NzInputModule } from 'ng-zorro-antd/input';
+import { NzSpinModule } from 'ng-zorro-antd/spin';
+import { NzTagModule } from 'ng-zorro-antd/tag';
 
 const BASE = '/assets/figma';
 
 @Component({
     selector: 'app-header',
     standalone: true,
-    imports: [CommonModule, RouterModule, AuthModalComponent],
+    imports: [
+        CommonModule,
+        RouterModule,
+        FormsModule,
+        AuthModalComponent,
+        NzAvatarModule,
+        NzButtonModule,
+        NzEmptyModule,
+        NzIconModule,
+        NzInputModule,
+        NzSpinModule,
+        NzTagModule
+    ],
     templateUrl: './header.component.html',
     styleUrls: ['./header.component.css']
 })
@@ -19,15 +39,22 @@ export class HeaderComponent implements OnInit {
 
     currentUser = signal<AuthUser | null>(null);
 
-    showServiceMenu = signal<boolean>(false);
     showAuthModal = signal<boolean>(false);
     showUserDropdown = signal<boolean>(false);
     showVmDropdown = signal<boolean>(false);
+    showConsultPopup = signal<boolean>(false);
+    consultSubmitted = signal<boolean>(false);
+
+    consultForm = {
+        name: '',
+        phone: '',
+        company: '',
+        note: '',
+    };
 
     myVMs = signal<any[]>([]);
     isLoadingVMs = signal<boolean>(false);
 
-    menuCategory = signal<string>('featured');
     activeNav = signal<string>('');
 
     navLinks = [
@@ -39,24 +66,13 @@ export class HeaderComponent implements OnInit {
         { label: 'Liên hệ', id: 'contact' },
     ];
 
-    serviceCategories = [
-        { id: 'cloud', label: 'Hạ tầng đám mây' },
-        { id: 'storage', label: 'Lưu trữ & Sao lưu' },
-        { id: 'network', label: 'Mạng & Bảo mật' },
-        { id: 'specialized', label: 'Giải pháp chuyên biệt' },
-    ];
-
-    menuServiceCards = [
-        { title: 'Cloud Server', subtitle: 'Máy chủ ảo trên đám mây', img: `${BASE}/usp_tech.png` },
-        { title: 'Web Hosting', subtitle: 'Máy chủ ảo trên đám mây', img: `${BASE}/usp_security.png` },
-        { title: 'Database Service', subtitle: 'Máy chủ ảo trên đám mây', img: `${BASE}/usp_quality.png` },
-        { title: 'Web Hosting', subtitle: 'Máy chủ ảo trên đám mây', img: `${BASE}/usp_security.png` },
-    ];
-
     assets = {
         logoClouDC: `${BASE}/logo_clouddc.png`,
         userIcon: `${BASE}/user_icon.svg`,
-        menuBanner: `${BASE}/usp_tech.png`
+        popupBanner: `${BASE}/hero_banner.png`,
+        successVector: `${BASE}/2588ba8a285864f6aaa8a4a17bdf33ca8c961336.svg`,
+        successGroup: `${BASE}/d7707a8636034e0fab3f86fe8a7d0d32d1320c9f.svg`,
+        successGroup1: `${BASE}/46d1678f3fe39c7fc3aad2a829891fa79d31c4f3.svg`
     };
 
     constructor(
@@ -74,6 +90,14 @@ export class HeaderComponent implements OnInit {
                 this.myVMs.set([]);
             }
         });
+        
+        // Match active tab on load or router navigation
+        const currentUrl = this.router.url;
+        if (currentUrl.includes('/pricing')) {
+             this.activeNav.set('pricing');
+        } else if (currentUrl === '/' || currentUrl === '/#services') {
+             // Home page.
+        }
     }
 
     loadMyVMs() {
@@ -101,7 +125,6 @@ export class HeaderComponent implements OnInit {
             this.loadMyVMs();
         }
         this.showUserDropdown.set(false);
-        this.showServiceMenu.set(false);
     }
 
     closeVmDropdown() {
@@ -134,28 +157,24 @@ export class HeaderComponent implements OnInit {
     }
 
     onOpenConsultPopup() {
-        this.openConsultPopup.emit();
+        this.showConsultPopup.set(true);
     }
 
-    onServiceNavClick(event: Event) {
-        event.preventDefault();
-        event.stopPropagation();
-        this.showServiceMenu.set(!this.showServiceMenu());
+    closeConsultPopup() {
+        this.showConsultPopup.set(false);
+        this.consultSubmitted.set(false);
+        this.consultForm = { name: '', phone: '', company: '', note: '' };
     }
 
-    closeServiceMenu() {
-        this.showServiceMenu.set(false);
-    }
-
-    setMenuCategory(id: string) {
-        this.menuCategory.set(id);
+    submitConsultForm() {
+        console.log('Consultation form submitted:', this.consultForm);
+        this.consultSubmitted.set(true);
     }
 
     scrollToSection(id: string, event: Event) {
         if (id) {
             event.preventDefault();
             this.activeNav.set(id);
-            this.closeServiceMenu();
             
             // Redirect to pricing page
             if (id === 'pricing') {
@@ -180,9 +199,6 @@ export class HeaderComponent implements OnInit {
     @HostListener('document:click', ['$event'])
     onPageClick(event: Event) {
         const target = event.target as HTMLElement;
-        if (!target.closest('[data-menu]') && !target.closest('[data-nav]')) {
-            this.showServiceMenu.set(false);
-        }
         if (!target.closest('.user-dropdown-container')) {
             this.showUserDropdown.set(false);
         }

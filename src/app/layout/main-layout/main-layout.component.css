@@ -1,4 +1,14 @@
-main {
+/* Main Layout — NG-ZORRO overrides */
+:host {
+    display: block;
+}
+
+::ng-deep nz-layout {
+    min-height: 100vh;
+}
+
+::ng-deep nz-content {
     min-height: calc(100vh - 80px - 200px);
     /* Adjust based on header/footer heights */
+    background: #f5f7fb;
 }

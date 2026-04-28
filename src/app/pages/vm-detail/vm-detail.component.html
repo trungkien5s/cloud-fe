@@ -1,17 +1,23 @@
-<div class="vm-detail-page">
-  <div class="vm-detail-container">
-    <div class="header-section">
-      <h2>Chi tiết cấu hình</h2>
-      <button class="btn btn-outline" (click)="goToList()">← Quay lại danh sách</button>
+<div class="portal-page vm-detail-page">
+  <div class="portal-shell">
+    <div class="portal-page-header">
+      <div>
+        <h1 class="portal-page-title">Chi tiết cấu hình</h1>
+        <p class="portal-page-subtitle">Theo dõi trạng thái cấp phát, cấu hình phần cứng, hệ điều hành và thông tin truy cập máy ảo.</p>
+      </div>
+      <button nz-button class="btn btn-outline" (click)="goToList()">
+        <span nz-icon nzType="left"></span>
+        Quay lại danh sách
+      </button>
     </div>
 
     <!-- Trạng thái Loading ban đầu -->
     <div *ngIf="loading && !vmInfo" class="loading-state">
-      <div class="spinner"></div>
+      <nz-spin nzSimple></nz-spin>
       <p>Đang tải dữ liệu máy ảo...</p>
     </div>
 
-    <div *ngIf="error" class="alert alert-error">{{ error }}</div>
+    <nz-alert *ngIf="error" nzType="error" nzShowIcon [nzMessage]="error"></nz-alert>
 
     <div *ngIf="vmInfo" class="content-wrapper">
       
@@ -19,9 +25,7 @@
       <div class="status-banner" [ngClass]="{'status-active': isActive, 'status-build': isProvisioning, 'status-error': vmInfo.trangThai === 'ERROR'}">
         <div class="status-icon">
            <div *ngIf="isProvisioning" class="spinner-small"></div>
-           <svg *ngIf="isActive" width="24" height="24" viewBox="0 0 24 24" fill="none">
-             <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-           </svg>
+           <span *ngIf="isActive" nz-icon nzType="check-circle"></span>
         </div>
         <div class="status-info">
           <h3>Trạng thái: {{ vmInfo.trangThai || 'Đang xử lý' }}</h3>
@@ -31,11 +35,20 @@
       </div>
 
       <!-- Credential/First Time Info -->
-      <div *ngIf="isActive" class="alert alert-info credentials-alert">
-        <strong>Quan trọng:</strong> Hệ thống đã tự động tạo máy ảo. 
-        <br>Để SSH (Linux) hoặc RDP (Windows), hãy sử dụng IP: <strong>{{ vmInfo.ipPublic || vmInfo.ipPrivate || 'Đang chờ IP' }}</strong>. 
-        <br><em>Nếu bạn có đăng ký khởi tạo Password/Keypair, vui lòng kiểm tra email hoặc đăng nhập với Key mặc định của bạn.</em>
-      </div>
+      <nz-alert
+        *ngIf="isActive"
+        nzType="info"
+        nzShowIcon
+        class="credentials-alert"
+        [nzMessage]="'Quan trọng'"
+        [nzDescription]="credentialDescription">
+      </nz-alert>
+
+      <ng-template #credentialDescription>
+        Hệ thống đã tự động tạo máy ảo. Để SSH (Linux) hoặc RDP (Windows), hãy sử dụng IP:
+        <strong>{{ vmInfo.ipPublic || vmInfo.ipPrivate || 'Đang chờ IP' }}</strong>.
+        Nếu bạn có đăng ký khởi tạo Password/Keypair, vui lòng kiểm tra email hoặc đăng nhập với Key mặc định của bạn.
+      </ng-template>
 
       <div class="info-grid">
         <!-- Thông tin chung -->
@@ -116,12 +129,12 @@
       <div *ngIf="isActive" class="cta-section">
         <h4>Hành động thao tác</h4>
         <div class="cta-buttons">
-          <button class="btn btn-primary btn-icon">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 8l4 4-4 4 M13 16h4"/></svg>
+          <button nz-button nzType="primary" class="btn btn-primary btn-icon" id="btn-open-console" (click)="openConsole()">
+            <span nz-icon nzType="code"></span>
             Mở Web Console
           </button>
-          <button class="btn btn-outline btn-icon">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20 M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          <button nz-button class="btn btn-outline btn-icon">
+            <span nz-icon nzType="safety-certificate"></span>
             Cấu hình mạng (Security Group)
           </button>
         </div>

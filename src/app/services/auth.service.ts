@@ -109,6 +109,7 @@ export class AuthService {
             localStorage.removeItem('access_token');
             localStorage.removeItem('refresh_token');
             localStorage.removeItem('username');
+            alert('Đăng xuất thành công!');
         }
         this.authUserSubject.next(null);
         this.router.navigate(['/']);
@@ -230,5 +231,15 @@ export class AuthService {
 
     changePassword(id: string, data: any): Observable<any> {
         return this.http.post<ApiResponse<any>>(`${this.apiUrl}/users/${id}/change-password`, data);
+    }
+
+    getProvinces(): Observable<any[]> {
+        return this.http.get<ApiResponse<any[]>>(`${this.apiUrl}/auth/register/provinces`)
+            .pipe(map(res => res.data));
+    }
+
+    getTermsOfService(): Observable<any> {
+        return this.http.get<ApiResponse<any>>(`${this.apiUrl}/auth/register/terms`)
+            .pipe(map(res => res.data));
     }
 }

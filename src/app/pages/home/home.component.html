@@ -6,55 +6,68 @@
        HERO — banner carousel
   ══════════════════════════════════════════ -->
     <section class="hero">
-        <!-- Dimmed side frames -->
-        <div class="hero__side hero__side--left">
-            <img [src]="assets.heroFrameLeft" alt="" class="hero__side-img" />
-        </div>
+        <div class="hero__slider">
+            @for (banner of heroBanners; track $index) {
+            <div class="hero__slide" [class.hero__slide--active]="activeBannerIndex() === $index" 
+                 [style.background]="banner.bg || 'transparent'">
+                 
+                <!-- Active overlay handles clicks -->
+                <div class="hero__overlay">
+                    
+                    <!-- 1. Default image-based layout -->
+                    @if (!banner.isHtml) {
+                        <div class="hero__content">
+                            @if (banner.headline) {
+                                <img [src]="banner.headline" alt="CloudDC headline" class="hero__headline" />
+                            }
+                            <button nz-button nzGhost class="hero__btn">
+                                Tìm hiểu thêm 
+                                <span nz-icon nzType="arrow-right"></span>
+                            </button>
+                        </div>
+                        <img src="/assets/figma/logo_clouddc.png" class="hero__logo-br" alt="CloudDC" />
+                    }
 
-        <!-- Main featured banner -->
-        <div class="hero__main">
-            <!-- Arrows -->
-            <button class="hero__arrow hero__arrow--left" (click)="prevBanner()">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                    <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-                </svg>
-            </button>
-            <button class="hero__arrow hero__arrow--right" (click)="nextBanner()">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                    <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-                </svg>
-            </button>
+                    <!-- 2. Dynamic HTML-based layout -->
+                    @if (banner.isHtml) {
+                        <div class="hero__html-layout">
+                            <div class="hero__html-left">
+                                <h3 class="hero__html-subtitle">{{ banner.subtitle }}</h3>
+                                <h2 class="hero__html-title">{{ banner.title }}</h2>
+                                <p class="hero__html-desc">{{ banner.desc }}</p>
+                                
+                                <div class="hero__html-tags">
+                                    @for (tag of banner.tags; track $index) {
+                                        <span class="hero__html-tag">
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                                                <path d="M20 6L9 17l-5-5" stroke="#38bdf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            </svg>
+                                            {{ tag }}
+                                        </span>
+                                    }
+                                </div>
+                                
+                                <button nz-button nzGhost class="hero__btn hero__btn--html">
+                                    {{ banner.cta }}
+                                    <span nz-icon nzType="arrow-right"></span>
+                                </button>
+                            </div>
+                            
+                            <div class="hero__html-right">
+                                <img [src]="banner.img" class="hero__html-img" alt="">
+                            </div>
+                        </div>
+                    }
 
-            <!-- Slider container -->
-            <div class="hero__slider" [style.transform]="'translateX(' + (-activeBannerIndex() * 100) + '%)'">
-                @for (banner of heroBanners; track $index) {
-                <div class="hero__slide">
-                    <img [src]="banner.img" alt="MobiFone CloudDC" class="hero__main-img" />
-
-                    <!-- Overlaid headline + CTA -->
-                    <div class="hero__overlay">
-                        <img [src]="banner.headline" alt="CloudDC headline" class="hero__headline" />
-                        <button class="hero__btn">
-                            Tìm hiểu thêm
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                                <path d="M7 17L17 7M17 7H7M17 7v10" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                            </svg>
-                        </button>
-                    </div>
                 </div>
-                }
             </div>
+            }
 
-            <!-- Dots -->
             <div class="hero__dots">
-                @for (banner of heroBanners; track $index) {
-                <span class="hero__dot" [class.hero__dot--on]="activeBannerIndex() === $index" (click)="setBannerIndex($index)"></span>
+                @for (b of heroBanners; track dotIdx; let dotIdx = $index) {
+                <span class="hero__dot" [class.hero__dot--on]="activeBannerIndex() === dotIdx" (click)="setBannerIndex(dotIdx)"></span>
                 }
             </div>
-        </div>
-
-        <div class="hero__side hero__side--right">
-            <img [src]="assets.heroFrameRight" alt="" class="hero__side-img" />
         </div>
     </section>
 
@@ -113,26 +126,14 @@
             <!-- Right col: accordion -->
             <div class="why__acc">
                 @for (faq of faqItems; track faq.question; let i = $index) {
-                <div class="acc__item">
-                    <button class="acc__btn" (click)="toggleFaq(i)">
-                        <span class="acc__q">{{ faq.question }}</span>
-                        <span class="acc__icon">
-                            @if (activeFaq() === i) {
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                                <path d="M5 12h14" stroke="#003159" stroke-width="2" stroke-linecap="round" />
-                            </svg>
-                            } @else {
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                                <path d="M12 5v14M5 12h14" stroke="#003159" stroke-width="2" stroke-linecap="round" />
-                            </svg>
-                            }
-                        </span>
-                    </button>
-                    @if (activeFaq() === i && faq.answer) {
-                    <div class="acc__ans">{{ faq.answer }}</div>
-                    }
-                    <div class="acc__div"></div>
-                </div>
+                <nz-collapse class="home-collapse" nzGhost>
+                    <nz-collapse-panel
+                        [nzHeader]="faq.question"
+                        [nzActive]="activeFaq() === i"
+                        (nzActiveChange)="toggleFaq(i)">
+                        <p class="acc__ans">{{ faq.answer || 'Thông tin chi tiết sẽ được cập nhật.' }}</p>
+                    </nz-collapse-panel>
+                </nz-collapse>
                 }
             </div>
         </div>
@@ -147,8 +148,9 @@
 
             <div class="landing-services__search-container">
                 <div class="landing-services__search-wrapper">
-                    <img [src]="landingSearchIcon" alt="Search" class="landing-services__search-icon" />
-                    <input type="text" class="landing-services__search-input" placeholder="Tìm kiếm dịch vụ" />
+                    <nz-input-group nzPrefixIcon="search" class="landing-services__search-input">
+                        <input nz-input type="text" placeholder="Tìm kiếm dịch vụ" />
+                    </nz-input-group>
                 </div>
             </div>
 
@@ -163,7 +165,10 @@
                         <p class="landing-service-card__desc">{{ service.desc }}</p>
                     </div>
                     <div class="landing-service-card__action">
-                        <button class="landing-service-card__btn">Chi tiết</button>
+                        <button nz-button nzType="primary" class="landing-service-card__btn">
+                            Chi tiết
+                            <span nz-icon nzType="arrow-right"></span>
+                        </button>
                     </div>
                 </div>
                 }
@@ -182,10 +187,8 @@
             <div class="sol__grid">
 
                 <!-- Arrow left -->
-                <button class="sol__arrow sol__arrow--left" aria-label="Trước">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                        <path d="M15 18l-6-6 6-6" stroke="#003159" stroke-width="2" stroke-linecap="round" />
-                    </svg>
+                <button nz-button nzShape="circle" class="sol__arrow sol__arrow--left" aria-label="Trước">
+                    <span nz-icon nzType="left"></span>
                 </button>
 
                 @for (s of solutions; track s.title) {
@@ -198,10 +201,8 @@
                 }
 
                 <!-- Arrow right -->
-                <button class="sol__arrow sol__arrow--right" aria-label="Tiếp">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                        <path d="M9 18l6-6-6-6" stroke="#003159" stroke-width="2" stroke-linecap="round" />
-                    </svg>
+                <button nz-button nzShape="circle" class="sol__arrow sol__arrow--right" aria-label="Tiếp">
+                    <span nz-icon nzType="right"></span>
                 </button>
             </div>
         </div>
@@ -242,12 +243,11 @@
         <div class="news__inner">
             <h2 class="sec-title sec-title--blue">Tin tức</h2>
 
-            <div class="tab-pills">
+            <nz-radio-group class="tab-pills" [ngModel]="activeNewsTab()" (ngModelChange)="setNewsTab($event)">
                 @for (tab of newsTabs; track tab.id) {
-                <button class="tab-pill" [class.tab-pill--on]="activeNewsTab() === tab.id"
-                    (click)="setNewsTab(tab.id)">{{ tab.label }}</button>
+                <label nz-radio-button [nzValue]="tab.id">{{ tab.label }}</label>
                 }
-            </div>
+            </nz-radio-group>
 
             <div class="news__grid">
                 <!-- Featured -->
@@ -320,10 +320,8 @@
             </div>
             <div class="popup__title-bar">
                 <h2 class="popup__title" id="popup-title">Yêu cầu tư vấn</h2>
-                <button class="popup__close" aria-label="Đóng" (click)="closeConsultPopup()">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                        <path d="M18 6L6 18M6 6l12 12" stroke="#003159" stroke-width="2" stroke-linecap="round" />
-                    </svg>
+                <button nz-button nzType="text" nzShape="circle" class="popup__close" aria-label="Đóng" (click)="closeConsultPopup()">
+                    <span nz-icon nzType="close"></span>
                 </button>
             </div>
         </div>
@@ -332,17 +330,17 @@
         <div class="popup__body">
             <div class="popup__form">
                 <div class="popup__field">
-                    <input class="popup__input" type="text" placeholder="Họ &amp; tên" [(ngModel)]="consultForm.name" />
+                    <input nz-input class="popup__input" type="text" placeholder="Họ &amp; tên" [(ngModel)]="consultForm.name" />
                 </div>
                 <div class="popup__field">
-                    <input class="popup__input" type="tel" placeholder="Số điện thoại"
+                    <input nz-input class="popup__input" type="tel" placeholder="Số điện thoại"
                         [(ngModel)]="consultForm.phone" />
                 </div>
                 <div class="popup__field">
-                    <input class="popup__input" type="text" placeholder="Công ty" [(ngModel)]="consultForm.company" />
+                    <input nz-input class="popup__input" type="text" placeholder="Công ty" [(ngModel)]="consultForm.company" />
                 </div>
                 <div class="popup__field">
-                    <textarea class="popup__textarea" placeholder="Ghi chú" rows="4"
+                    <textarea nz-input class="popup__textarea" placeholder="Ghi chú" rows="4"
                         [(ngModel)]="consultForm.note"></textarea>
                 </div>
             </div>
@@ -350,11 +348,8 @@
 
         <!-- Footer: submit button -->
         <div class="popup__footer">
-            <button class="popup__submit" (click)="submitConsultForm()">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" stroke="#dc3545"
-                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                </svg>
+            <button nz-button nzType="primary" class="popup__submit" (click)="submitConsultForm()">
+                <span nz-icon nzType="send"></span>
                 Gửi yêu cầu
             </button>
         </div>
@@ -365,10 +360,8 @@
         <div class="success__wrapper">
             <!-- Close button top-right -->
             <div class="success__close-bar">
-                <button class="popup__close" aria-label="Đóng" (click)="closeConsultPopup()">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                        <path d="M18 6L6 18M6 6l12 12" stroke="#003159" stroke-width="2" stroke-linecap="round" />
-                    </svg>
+                <button nz-button nzType="text" nzShape="circle" class="popup__close" aria-label="Đóng" (click)="closeConsultPopup()">
+                    <span nz-icon nzType="close"></span>
                 </button>
             </div>
 
@@ -396,10 +389,10 @@
             <!-- Footer: buttons -->
             <div class="success__actions">
                 <div class="success__btn-group">
-                    <button class="success__btn success__btn--outline" (click)="closeConsultPopup()">
+                    <button nz-button class="success__btn success__btn--outline" (click)="closeConsultPopup()">
                         Về trang chủ
                     </button>
-                    <button class="success__btn success__btn--primary" (click)="closeConsultPopup()">
+                    <button nz-button nzType="primary" class="success__btn success__btn--primary" (click)="closeConsultPopup()">
                         Đã hiểu
                     </button>
                 </div>

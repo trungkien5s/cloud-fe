@@ -1,25 +1,5 @@
 .vm-detail-page {
-  padding: 24px;
-  background-color: #f8fafc;
-  min-height: calc(100vh - 64px);
-}
-
-.vm-detail-container {
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.header-section {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
-}
-
-.header-section h2 {
-  font-size: 24px;
-  color: #1e293b;
-  margin: 0;
+  min-height: calc(100vh - 80px);
 }
 
 .btn {
@@ -60,7 +40,8 @@
   padding: 48px;
   background: white;
   border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  border: 1px solid #e4e7ec;
+  box-shadow: 0 8px 24px rgba(15, 39, 66, 0.06);
 }
 
 .spinner {
@@ -155,7 +136,8 @@
   background: white;
   border-radius: 8px;
   padding: 20px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  border: 1px solid #e4e7ec;
+  box-shadow: 0 8px 24px rgba(15, 39, 66, 0.06);
 }
 
 .info-card h4 {
@@ -202,7 +184,8 @@
   background: white;
   border-radius: 8px;
   padding: 20px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  border: 1px solid #e4e7ec;
+  box-shadow: 0 8px 24px rgba(15, 39, 66, 0.06);
 }
 
 .cta-section h4 {

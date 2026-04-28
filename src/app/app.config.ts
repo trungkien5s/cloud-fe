@@ -1,18 +1,137 @@
 import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { provideRouter } from '@angular/router';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { registerLocaleData } from '@angular/common';
+import vi from '@angular/common/locales/vi';
+
+// NG-ZORRO providers
+import { vi_VN, provideNzI18n } from 'ng-zorro-antd/i18n';
+import { provideNzIcons } from 'ng-zorro-antd/icon';
+import {
+  UserOutline,
+  LockOutline,
+  MailOutline,
+  SearchOutline,
+  PlusOutline,
+  ReloadOutline,
+  DesktopOutline,
+  PoweroffOutline,
+  PlayCircleOutline,
+  MoreOutline,
+  InfoCircleOutline,
+  DeleteOutline,
+  CloudServerOutline,
+  CheckCircleOutline,
+  PauseCircleOutline,
+  EditOutline,
+  DownloadOutline,
+  SettingOutline,
+  HomeOutline,
+  MenuOutline,
+  CloseOutline,
+  LogoutOutline,
+  KeyOutline,
+  ShoppingCartOutline,
+  DollarOutline,
+  BellOutline,
+  QuestionCircleOutline,
+  ExclamationCircleOutline,
+  LeftOutline,
+  RightOutline,
+  UpOutline,
+  DownOutline,
+  CloudOutline,
+  DatabaseOutline,
+  SafetyOutline,
+  GlobalOutline,
+  PhoneOutline,
+  EnvironmentOutline,
+  TeamOutline,
+  FileTextOutline,
+  StarOutline,
+  ThunderboltOutline,
+  AppstoreOutline,
+  CopyOutline,
+  EyeOutline,
+  EyeInvisibleOutline,
+  LoadingOutline,
+  SyncOutline,
+  SwapOutline,
+  FilterOutline,
+  SortAscendingOutline,
+  CaretDownOutline,
+  DashboardOutline,
+} from '@ant-design/icons-angular/icons';
 
 import { routes } from './app.routes';
-import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
-import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { authInterceptor } from './interceptors/auth.interceptor';
+
+registerLocaleData(vi);
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
-    provideClientHydration(withEventReplay()),
     provideHttpClient(
       withInterceptors([authInterceptor])
-    )
+    ),
+    provideAnimationsAsync(),
+    provideNzI18n(vi_VN),
+    provideNzIcons([
+      UserOutline,
+      LockOutline,
+      MailOutline,
+      SearchOutline,
+      PlusOutline,
+      ReloadOutline,
+      DesktopOutline,
+      PoweroffOutline,
+      PlayCircleOutline,
+      MoreOutline,
+      InfoCircleOutline,
+      DeleteOutline,
+      CloudServerOutline,
+      CheckCircleOutline,
+      PauseCircleOutline,
+      EditOutline,
+      DownloadOutline,
+      SettingOutline,
+      HomeOutline,
+      MenuOutline,
+      CloseOutline,
+      LogoutOutline,
+      KeyOutline,
+      ShoppingCartOutline,
+      DollarOutline,
+      BellOutline,
+      QuestionCircleOutline,
+      ExclamationCircleOutline,
+      LeftOutline,
+      RightOutline,
+      UpOutline,
+      DownOutline,
+      CloudOutline,
+      DatabaseOutline,
+      SafetyOutline,
+      GlobalOutline,
+      PhoneOutline,
+      EnvironmentOutline,
+      TeamOutline,
+      FileTextOutline,
+      StarOutline,
+      ThunderboltOutline,
+      AppstoreOutline,
+      CopyOutline,
+      EyeOutline,
+      EyeInvisibleOutline,
+      LoadingOutline,
+      SyncOutline,
+      SwapOutline,
+      FilterOutline,
+      SortAscendingOutline,
+      CaretDownOutline,
+      DashboardOutline,
+    ]),
   ]
 };

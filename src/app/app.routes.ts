@@ -1,23 +1,22 @@
 import { Routes } from '@angular/router';
 import { MainLayoutComponent } from './layout/main-layout/main-layout.component';
-import { HomeComponent } from './pages/home/home.component';
-import { ProfileComponent } from './pages/profile/profile.component';
-import { ChangePasswordComponent } from './pages/change-password/change-password.component';
-import { VmCreateComponent } from './pages/vm-create/vm-create.component';
-import { VmDetailComponent } from './pages/vm-detail/vm-detail.component';
-import { PricingComponent } from './pages/pricing/pricing.component';
 
 export const routes: Routes = [
     {
         path: '',
         component: MainLayoutComponent,
         children: [
-            { path: '', component: HomeComponent },
-            { path: 'profile', component: ProfileComponent },
-            { path: 'change-password', component: ChangePasswordComponent },
-            { path: 'vm/create', component: VmCreateComponent },
-            { path: 'vm/detail/:id', component: VmDetailComponent },
-            { path: 'pricing', component: PricingComponent },
+            { path: '', loadComponent: () => import('./pages/home/home.component').then(m => m.HomeComponent) },
+            { path: 'profile', loadComponent: () => import('./pages/profile/profile.component').then(m => m.ProfileComponent) },
+            { path: 'change-password', loadComponent: () => import('./pages/change-password/change-password.component').then(m => m.ChangePasswordComponent) },
+            { path: 'vm/create', loadComponent: () => import('./pages/vm-create/vm-create.component').then(m => m.VmCreateComponent) },
+            { path: 'vm/detail/:id', loadComponent: () => import('./pages/vm-detail/vm-detail.component').then(m => m.VmDetailComponent) },
+            { path: 'pricing', loadComponent: () => import('./pages/pricing/pricing.component').then(m => m.PricingComponent) },
+            { path: 'cart', loadComponent: () => import('./pages/cart/cart.component').then(m => m.CartComponent) },
+            {
+                path: 'vm/console/:id',
+                loadComponent: () => import('./pages/vm-console/vm-console.component').then(m => m.VmConsoleComponent)
+            },
         ]
     },
     { path: '**', redirectTo: '' }

@@ -1,0 +1,100 @@
+<div class="portal-page cart-page">
+  <div class="portal-shell">
+    <div class="portal-page-header">
+        <div>
+            <h1 class="portal-page-title">Giỏ hàng</h1>
+            <p class="portal-page-subtitle">Kiểm tra cấu hình, thời hạn sử dụng và tổng chi phí trước khi thanh toán.</p>
+        </div>
+    </div>
+
+    <!-- Stepper -->
+    <nz-steps class="stepper-wrapper" [nzCurrent]="0">
+        <nz-step nzTitle="Đơn hàng"></nz-step>
+        <nz-step nzTitle="Thông tin"></nz-step>
+        <nz-step nzTitle="Thanh toán"></nz-step>
+        <nz-step nzTitle="Hoàn thành"></nz-step>
+    </nz-steps>
+    
+    <div class="cart-gradient-line"></div>
+
+    <!-- Layout -->
+    <div class="cart-layout">
+        <!-- Left: Cart Items -->
+        <div class="cart-items-section">
+            <div class="cart-items-header">
+                <h2 class="cart-title">DANH SÁCH ĐƠN HÀNG</h2>
+                <button nz-button nzDanger class="btn-clear" (click)="clearCart()" *ngIf="items.length > 0">
+                    <span nz-icon nzType="delete"></span>
+                    Xóa tất cả
+                </button>
+            </div>
+
+            <div class="cart-empty" *ngIf="items.length === 0">
+                <nz-empty nzNotFoundContent="Giỏ hàng của bạn đang trống"></nz-empty>
+                <a routerLink="/pricing" style="color: #006EF5;">Mua thêm dịch vụ</a>
+            </div>
+
+            <div class="cart-item" *ngFor="let item of items">
+                <div class="item-img">
+                    <img src="/assets/figma/usp_tech.png" alt="Cloud" width="80" style="object-fit: contain;">
+                </div>
+                <div class="item-name">{{ item.name }}</div>
+                
+                <div class="item-control">
+                    <nz-select class="form-select" nzPlaceHolder="Chọn templates" [ngModel]="item.template" (ngModelChange)="updateTemplate(item.id, $event)">
+                        <nz-option *ngFor="let t of templates" [nzValue]="t.name" [nzLabel]="t.name"></nz-option>
+                    </nz-select>
+                </div>
+
+                <div class="item-control">
+                    <nz-select class="form-select" [ngModel]="item.duration" (ngModelChange)="updateDuration(item.id, $event)">
+                        <nz-option *ngFor="let d of durations" [nzValue]="d.value" [nzLabel]="d.label"></nz-option>
+                    </nz-select>
+                </div>
+
+                <div class="item-price">
+                    {{ (item.price * item.duration).toLocaleString('vi-VN') }} đ
+                </div>
+
+                <button nz-button nzType="text" nzDanger class="btn-remove" (click)="removeItem(item.id)" title="Xoá">
+                    <span nz-icon nzType="delete"></span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Right: Summary -->
+        <div class="summary-section">
+            <div class="discount-box">
+                <input nz-input type="text" class="input-discount" placeholder="Mã ưu đãi" [(ngModel)]="discountCode">
+                <button nz-button nzType="primary" class="btn-apply" (click)="applyDiscount()">Áp dụng</button>
+            </div>
+
+            <div class="summary-row mt-4">
+                <span class="sr-label" style="color: #006EF5; font-weight: 500;">Tổng tiền (chưa VAT)</span>
+                <span class="sr-value">{{ getSubtotal().toLocaleString('vi-VN') }} đ</span>
+            </div>
+
+            <div class="summary-row">
+                <span class="sr-label" style="color: #006EF5; font-weight: 500;">Thuế VAT</span>
+                <span class="sr-value">{{ getVat().toLocaleString('vi-VN') }} đ</span>
+            </div>
+
+            <div class="summary-row">
+                <span class="sr-label" style="color: #dc3545; font-weight: 500;">Ưu đãi</span>
+                <span class="sr-value" style="color: #dc3545;" *ngIf="discountAmount > 0">-{{ discountAmount.toLocaleString('vi-VN') }} đ</span>
+                <span class="sr-value" *ngIf="discountAmount === 0"></span>
+            </div>
+            
+            <hr class="summary-divider">
+
+            <div class="summary-row mt-3 mb-4">
+                <span class="sr-label" style="color: #006EF5; font-weight: bold; font-size: 16px;">Thành tiền</span>
+                <span class="sr-value total-price" style="color: #006EF5; font-weight: bold; font-size: 18px;">{{ getTotal().toLocaleString('vi-VN') }} đ</span>
+            </div>
+
+            <button nz-button nzType="primary" nzBlock class="btn-checkout" (click)="checkout()">Thanh toán</button>
+            <button nz-button nzBlock class="btn-continue" routerLink="/pricing">Quay lại mua hàng</button>
+        </div>
+    </div>
+  </div>
+</div>

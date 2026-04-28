@@ -2,6 +2,13 @@ import { Component, signal, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService, AuthUser } from '../../services/auth.service';
+import { NzButtonModule } from 'ng-zorro-antd/button';
+import { NzCardModule } from 'ng-zorro-antd/card';
+import { NzCollapseModule } from 'ng-zorro-antd/collapse';
+import { NzIconModule } from 'ng-zorro-antd/icon';
+import { NzInputModule } from 'ng-zorro-antd/input';
+import { NzModalModule } from 'ng-zorro-antd/modal';
+import { NzRadioModule } from 'ng-zorro-antd/radio';
 // ─── Figma asset URLs (served by Figma Desktop MCP server on localhost:3845)
 const BASE = '/assets/figma';
 const A = {
@@ -90,7 +97,17 @@ const A = {
 @Component({
     selector: 'app-home',
     standalone: true,
-    imports: [CommonModule, FormsModule],
+    imports: [
+        CommonModule,
+        FormsModule,
+        NzButtonModule,
+        NzCardModule,
+        NzCollapseModule,
+        NzIconModule,
+        NzInputModule,
+        NzModalModule,
+        NzRadioModule
+    ],
     templateUrl: './home.component.html',
     styleUrl: './home.component.css',
 })
@@ -112,14 +129,74 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     // Hero Banner Carousel
     heroBanners = [
-        { img: A.heroBanner, headline: A.heroHeadline },
-        { img: A.heroBanner, headline: A.heroHeadline },
-        { img: A.heroBanner, headline: A.heroHeadline },
-        { img: A.heroBanner, headline: A.heroHeadline },
-        { img: A.heroBanner, headline: A.heroHeadline },
+        { 
+            isHtml: false,
+            img: A.heroBanner, 
+            headline: A.heroHeadline,
+            bg: 'linear-gradient(108.46deg, #020202 0.38%, #1D0535 46.21%, #004D54 99.16%)'
+        },
+        { 
+            isHtml: true,
+            title: 'CLOUD SERVER',
+            subtitle: 'LINH HOẠT & HIỆU NĂNG CAO',
+            desc: 'Khởi tạo máy ảo ảo hoá mạnh mẽ chỉ trong vài giây. Mở rộng tài nguyên không giới hạn, đảm bảo hoạt động liên tục 99.99%.',
+            tags: ['Bảo mật tuyệt đối', 'Uptime 99.99%', 'Hạ tầng mạnh mẽ', 'Tối ưu chi phí'],
+            cta: 'Khởi tạo VM ngay',
+            img: `${BASE}/solution_cloud.png`,
+            bg: 'linear-gradient(108.46deg, #0d121c 0%, #152238 50%, #0a1f2e 100%)'
+        },
+        { 
+            isHtml: true,
+            title: 'VIRTUAL PRIVATE CLOUD',
+            subtitle: 'HẠ TẦNG MẠNH MẼ, RIÊNG BIỆT',
+            desc: 'Thiết lập mạng lưới ảo nội bộ VPC dành riêng cho doanh nghiệp với chuẩn bảo mật quốc tế và kết nối MPLS/VPN linh hoạt.',
+            tags: ['Kết nối an toàn', 'Kiểm soát truy cập', 'Mạng lưới tốc độ cao', 'Dễ dàng tích hợp'],
+            cta: 'Tìm hiểu VPC',
+            img: `${BASE}/Private_Cloud.png`,
+            bg: 'linear-gradient(120deg, #090e17 0%, #2f1d43 60%, #111b2b 100%)'
+        },
+        { 
+            isHtml: true,
+            title: 'CLOUD DATABASE',
+            subtitle: 'QUẢN LÝ DỮ LIỆU TOÀN DIỆN',
+            desc: 'Hệ quản trị cơ sở dữ liệu hoàn toàn tự động, tự động sao lưu và dễ dàng theo dõi hiệu năng (MySQL, PostgreSQL, MongoDB).',
+            tags: ['Auto Backup', 'High Availability', 'Bảo mật dữ liệu', 'Mở rộng linh hoạt'],
+            cta: 'Xem Bảng Giá',
+            img: `${BASE}/solution_database.png`,
+            bg: 'linear-gradient(90deg, #0b151e 0%, #062b33 100%)'
+        }
     ];
     activeBannerIndex = signal<number>(0);
     private bannerInterval: any;
+
+    getSlideClass(index: number): string {
+        const active = this.activeBannerIndex();
+        const total = this.heroBanners.length;
+        
+        if (index === active) return 'hero__slide--active';
+        
+        let prev = active - 1;
+        if (prev < 0) prev = total - 1;
+        
+        let next = active + 1;
+        if (next >= total) next = 0;
+        
+        if (index === prev) return 'hero__slide--prev';
+        if (index === next) return 'hero__slide--next';
+        
+        const diff = (index - active + total) % total;
+        if (diff < total / 2) return 'hero__slide--hidden-right';
+        else return 'hero__slide--hidden-left';
+    }
+
+    onSlideClick(index: number) {
+        const slideClass = this.getSlideClass(index);
+        if (slideClass === 'hero__slide--prev') {
+            this.prevBanner();
+        } else if (slideClass === 'hero__slide--next') {
+            this.nextBanner();
+        }
+    }
 
     navLinks = [
         { label: 'Dịch vụ', id: 'services' },
